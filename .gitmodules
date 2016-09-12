@@ -1,6 +1,6 @@
 [submodule "deployment"]
 	path = deployment
-	url = https://github.com/evoila/cf-service-broker-deployment
+url=https://github.com/evoila/cf-service-broker-deployment/tree/master
 [submodule "persistence"]
 	path = persistence
 	url = https://github.com/evoila/cf-service-broker-persistence
