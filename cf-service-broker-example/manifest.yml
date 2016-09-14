@@ -2,14 +2,13 @@
 instances: 1
 timeout: 180
 memory: 1024M
-domain: onevoila.rocks
+domain:
 applications:
-- name: redis
-  host: redis
-  path: target/ssb-redis.jar
+- name: example
+  host: example
+  path: target/ssb-example.jar
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   env:
-    CF_TARGET: https://api.onevoila.rocks
+    CF_TARGET:
     SPRING_PROFILES_ACTIVE: cloud
     JAVA_OPTS: -Djava.security.egd=file:/dev/urandom
-  
