@@ -20,7 +20,7 @@
 		<module>core/core</module>
 		<module>core/model</module>
 		<module>deployment/docker</module>
-		
+
 		<module>cf-service-broker-example</module>
 		<module>persistence/persistence-redis</module>
 		<module>deployment/openstack</module>
@@ -131,7 +131,22 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>ftp-meshstack</id>
+			<url>ftp://maven.meshstack.io</url>
+		</repository>
+	</distributionManagement>
 
 	<repositories>
 		<repository>
