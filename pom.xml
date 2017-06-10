@@ -6,33 +6,34 @@
 	<parent>
 		<groupId>de.evoila.cf.broker</groupId>
 		<artifactId>custom-parent</artifactId>
-		<version>0.1-RC</version>
+		<version>1.1.0</version>
 		<relativePath>../core/custom-parent</relativePath>
 	</parent>
-	<artifactId>cf-service-broker-example</artifactId>
+	<artifactId>sb-example</artifactId>
 	<packaging>jar</packaging>
-	<name>ssb-example</name>
+	<name>sb-example</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>de.evoila.cf.broker</groupId>
-			<artifactId>core</artifactId>
-			<version>0.1-RC</version>
-		</dependency>
+		<!-- Cloud Foundry Service Broker -->
 		<dependency>
 			<groupId>de.evoila.cf.broker</groupId>
 			<artifactId>docker</artifactId>
-			<version>0.1-RC</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.evoila.cf.broker</groupId>
 			<artifactId>openstack</artifactId>
-			<version>0.1-RC</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>de.evoila.cf.broker</groupId>
-			<artifactId>persistence-redis</artifactId>
-			<version>0.1-RC</version>
+			<artifactId>existing-service</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>de.evoila.cf.broker</groupId>
+			<artifactId>persistence-mongodb</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 	</dependencies>
 

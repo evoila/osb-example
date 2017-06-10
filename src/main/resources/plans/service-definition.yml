@@ -2,6 +2,10 @@ id: example-service
 name: Example Service
 description: Example Service Instances
 bindable: true
+dashboard_client:
+  id: sample
+  secret: sample
+  redirectUri: http://localhost:8080/sample
 plans:
   - id: example-service-s
     name: S
