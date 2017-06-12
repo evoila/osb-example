@@ -13,7 +13,7 @@ import de.evoila.cf.cpi.custom.props.DomainBasedCustomPropertyHandler;
  * @author Christian Brinker, evoila.
  *
  */
-public class ExampleServiceCustomPropertyHandler implements DomainBasedCustomPropertyHandler {
+public class ExampleCustomPropertyHandler implements DomainBasedCustomPropertyHandler {
 
 	/*
 	 * (non-Javadoc)

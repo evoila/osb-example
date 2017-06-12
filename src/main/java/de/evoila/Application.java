@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.Assert;
 
 import de.evoila.cf.cpi.custom.props.DomainBasedCustomPropertyHandler;
-import de.evoila.cf.cpi.custom.props.ExampleServiceCustomPropertyHandler;
+import de.evoila.cf.cpi.custom.props.ExampleCustomPropertyHandler;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class Application {
 
 	@Bean
 	public DomainBasedCustomPropertyHandler domainPropertyHandler() {
-		return new ExampleServiceCustomPropertyHandler();
+		return new ExampleCustomPropertyHandler();
 	}
 
 	public static void main(String[] args) {

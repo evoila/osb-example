@@ -1,12 +1,13 @@
 spring:
   ### Profile ###
-  profiles: development
+  profiles: 
+    active: local
   ### General Information ###
   application:
-      name: example
+    name: example-dev
   ### Security ###
   ssl:
-    acceptselfsigned: <true, false>
+    acceptSelfSigned: true
   ### Cloud Config ###
   cloud:
     config:
@@ -21,60 +22,3 @@ spring:
 
   server:
     port: 8080
-
-  ### Login Information ###
-  login:
-    username: sample
-    password: sample
-    role: admin
-
-  ### Persistence ###
-  #### MongoDB ####
-    data:
-      mongodb:
-        host: localhost
-        port: 27017
-        database: service-broker
-        username: sb
-        password: sb
-
-  ### Deployment ###
-  #### Existing MongoDB Server/Cluster ####
-  existing:
-    endpoint:
-      host: <ip>
-      port: <port>
-      database: <database>
-      username: <username>
-      password: <password>
-
-  ### Logging ###
-  logging:
-    file: <file>
-    level:
-      root: <root>
-
-  ### Service ###
-  backend:
-    ports:
-      default: <port>
-    connection:
-      timeouts: <timeouts>
-
-  mongodb:
-    security:
-      key:
-        length: <length>
-
-  ### Service Key Generation ###
-  #### HAProxy ####
-  haproxy:
-    uri: <url of the haproxy backend>
-    auth:
-      token: <authentication token>
-
-  ### Deployment ###
-  deployment:
-    repo:
-      service: <url to the deployment script>
-      monit: <url to the monit script>

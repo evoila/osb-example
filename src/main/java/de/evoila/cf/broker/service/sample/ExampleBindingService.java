@@ -1,8 +1,10 @@
 /**
  * 
  */
-package de.evoila.cf.broker.custom;
+package de.evoila.cf.broker.service.sample;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +24,11 @@ import de.evoila.cf.broker.service.impl.BindingServiceImpl;
  *
  */
 @Service
-public class ExampleServiceBindingService extends BindingServiceImpl {
+public class ExampleBindingService extends BindingServiceImpl {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
+
+	private SecureRandom random = new SecureRandom();
 
 	/*
 	 * (non-Javadoc)
@@ -37,18 +41,21 @@ public class ExampleServiceBindingService extends BindingServiceImpl {
 	@Override
 	protected Map<String, Object> createCredentials(String bindingId, ServiceInstance serviceInstance,
 			ServerAddress host) throws ServiceBrokerException {
-		log.debug("bind Service");
+		log.info("Binding the Example Service");
 		
-		Map<String, Object> credentials = new HashMap<String, Object>();
-		
-		// credentials.put("uri", "");
+		String dbURL = String.format("example://%s:%s@%s:%d/%s", this.nextSessionId(), 
+				this.nextSessionId(), host.getIp(), host.getPort(),
+				serviceInstance.getId());
 
+		Map<String, Object> credentials = new HashMap<String, Object>();
+		credentials.put("uri", dbURL);
+		
 		return credentials;
 	}
 
 	@Override
 	protected void deleteBinding(String bindingId, ServiceInstance serviceInstance) throws ServiceBrokerException {
-		log.debug("unbind Service");
+		log.info("Unbinding the Example Service");
 	}
 
 	@Override
@@ -67,5 +74,9 @@ public class ExampleServiceBindingService extends BindingServiceImpl {
 	protected RouteBinding bindRoute(ServiceInstance serviceInstance, String route) {
 		throw new UnsupportedOperationException();
 	}
+	
+    public String nextSessionId() {
+        return new BigInteger(130, random).toString(32);
+    }
 
 }
