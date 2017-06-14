@@ -17,9 +17,9 @@ import de.evoila.cf.cpi.custom.props.DomainBasedCustomPropertyHandler;
 import de.evoila.cf.cpi.custom.props.ExampleCustomPropertyHandler;
 
 /**
- * 
  * @author Johannes Hiemer.
- *
+ * Deploying to Space for testing purposes is as follows:
+ * `cf create-service-broker name username password url --space-scoped`
  */
 @SpringBootApplication
 public class Application {

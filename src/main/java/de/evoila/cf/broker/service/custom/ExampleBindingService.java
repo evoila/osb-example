@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.evoila.cf.broker.service.sample;
+package de.evoila.cf.broker.service.custom;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -41,7 +41,7 @@ public class ExampleBindingService extends BindingServiceImpl {
 	@Override
 	protected Map<String, Object> createCredentials(String bindingId, ServiceInstance serviceInstance,
 			ServerAddress host) throws ServiceBrokerException {
-		log.info("Binding the Example Service");
+		log.info("Binding the Example Service...");
 		
 		String dbURL = String.format("example://%s:%s@%s:%d/%s", this.nextSessionId(), 
 				this.nextSessionId(), host.getIp(), host.getPort(),
@@ -55,7 +55,7 @@ public class ExampleBindingService extends BindingServiceImpl {
 
 	@Override
 	protected void deleteBinding(String bindingId, ServiceInstance serviceInstance) throws ServiceBrokerException {
-		log.info("Unbinding the Example Service");
+		log.info("Unbinding the Example Service...");
 	}
 
 	@Override
