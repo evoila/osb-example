@@ -9,9 +9,10 @@
 		<version>1.1.0</version>
 		<relativePath>../core/custom-parent</relativePath>
 	</parent>
-	<artifactId>sb-example</artifactId>
+	<artifactId>cf-service-broker-example</artifactId>
 	<packaging>jar</packaging>
-	<name>sb-example</name>
+	<name>cf-service-broker-example</name>
+	<version>1.1.0</version>
 
 	<dependencies>
 		<!-- Cloud Foundry Service Broker -->
