@@ -31,28 +31,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<id>Copy Finished Service Broker</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<copy file="${basedir}/osb-example/target/cf-service-broker-example.jar" tofile="${basedir}/target/cf-service-broker-example.jar"/>
-							</target>
-						</configuration>
-					</execution>
-
-				</executions>
-			</plugin>
 
 		</plugins>
 	</build>
