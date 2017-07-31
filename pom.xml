@@ -24,7 +24,7 @@
 	</modules>
 
 	<properties>
-		<statics.dir>${basedir}/../osb-example/src/main/resources/static/</statics.dir>
+		<resource.dir>${basedir}/../osb-example/src/main/resources</resource.dir>
 		<dasboard.module>example</dasboard.module>
 		<java.version>1.8</java.version>
 	</properties>
