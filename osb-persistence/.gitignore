@@ -25,5 +25,3 @@ ca.pem
 *manifest-with-credentials.yml
 *.pid
 *logging.file_IS_UNDEFINED
-*.springWebflow
-osb-example/src/main/resources/static
