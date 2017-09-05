@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @Service
 @ConditionalOnBean(BackupTypeService.class)
 public class InstanceCredentialServiceImpl implements InstanceCredentialService {
