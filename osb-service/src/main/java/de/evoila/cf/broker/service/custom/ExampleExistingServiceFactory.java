@@ -3,11 +3,7 @@
  */
 package de.evoila.cf.broker.service.custom;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Service;
-
+import de.evoila.cf.broker.bean.ExistingEndpointBean;
 import de.evoila.cf.broker.exception.PlatformException;
 import de.evoila.cf.broker.model.Plan;
 import de.evoila.cf.broker.model.ServiceInstance;
@@ -15,18 +11,18 @@ import de.evoila.cf.broker.service.sample.ExampleBackendService;
 import de.evoila.cf.cpi.existing.CustomExistingService;
 import de.evoila.cf.cpi.existing.CustomExistingServiceConnection;
 import de.evoila.cf.cpi.existing.ExistingServiceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Johannes Hiemer
  *
  */
 @Service
-@ConfigurationProperties(prefix="existing.endpoint")
-@ConditionalOnProperty(prefix="existing.endpoint", 
-	name = {"hosts", "port",
-		"database",
-		"username", "password"
-	}, havingValue="")
+@EnableConfigurationProperties
+@ConditionalOnBean(ExistingEndpointBean.class)
 public class ExampleExistingServiceFactory extends ExistingServiceFactory {
 	
 	@Autowired
