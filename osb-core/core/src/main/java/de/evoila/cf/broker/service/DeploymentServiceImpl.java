@@ -9,16 +9,12 @@ import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 
+import de.evoila.cf.broker.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.evoila.cf.broker.exception.PlatformException;
-import de.evoila.cf.broker.exception.ServiceBrokerException;
-import de.evoila.cf.broker.exception.ServiceDefinitionDoesNotExistException;
-import de.evoila.cf.broker.exception.ServiceInstanceDoesNotExistException;
-import de.evoila.cf.broker.exception.ServiceInstanceExistsException;
 import de.evoila.cf.broker.model.JobProgress;
 import de.evoila.cf.broker.model.JobProgressResponse;
 import de.evoila.cf.broker.model.Plan;
@@ -79,10 +75,9 @@ public class DeploymentServiceImpl implements DeploymentService {
 	@Override
 	public ServiceInstanceResponse createServiceInstance(String serviceInstanceId, String serviceDefinitionId,
 			String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
-			Map<String, String> context)
-					throws ServiceInstanceExistsException, ServiceBrokerException,
-					ServiceDefinitionDoesNotExistException {
-
+			Map<String, String> context, Boolean acceptsIncomplete)
+			throws ServiceInstanceExistsException, ServiceBrokerException,
+			ServiceDefinitionDoesNotExistException, AsyncRequiredException {
 
 		serviceDefinitionRepository.validateServiceId(serviceDefinitionId);
 
@@ -104,11 +99,15 @@ public class DeploymentServiceImpl implements DeploymentService {
 		if(platformService == null) {
 			throw new ServiceDefinitionDoesNotExistException(planId);
 		}
+
+		if(!acceptsIncomplete && !platformService.isSyncPossibleOnCreate(plan)) {
+			throw new AsyncRequiredException();
+		}
 		
 		if (platformService.isSyncPossibleOnCreate(plan)) {
 			return syncCreateInstance(serviceInstance, parameters, plan, platformService);
 		} else {
-			ServiceInstanceResponse serviceInstanceResponse = new ServiceInstanceResponse(serviceInstance, true);
+			ServiceInstanceResponse serviceInstanceResponse = new ServiceInstanceResponse(serviceInstance, acceptsIncomplete);
 
 			serviceInstanceRepository.addServiceInstance(serviceInstance.getId(), serviceInstance);
 
@@ -173,8 +172,8 @@ public class DeploymentServiceImpl implements DeploymentService {
 	 * java.lang.String)
 	 */
 	@Override
-	public void deleteServiceInstance(String instanceId)
-			throws ServiceBrokerException, ServiceInstanceDoesNotExistException {
+	public void deleteServiceInstance(String instanceId, Boolean acceptsIncomplete)
+			throws ServiceBrokerException, ServiceInstanceDoesNotExistException, AsyncRequiredException {
 		ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(instanceId);
 
 		if (serviceInstance == null) {
@@ -185,8 +184,11 @@ public class DeploymentServiceImpl implements DeploymentService {
 		
 		PlatformService platformService = platformRepository.getPlatformService(plan.getPlatform());
 
-		if (platformService.isSyncPossibleOnDelete(serviceInstance)
-				&& platformService.isSyncPossibleOnDelete(serviceInstance)) {
+		if(!acceptsIncomplete && !platformService.isSyncPossibleOnDelete(serviceInstance)) {
+			throw new AsyncRequiredException();
+		}
+
+		if (platformService.isSyncPossibleOnDelete(serviceInstance)) {
 			syncDeleteInstance(serviceInstance, platformService);
 		} else {
 			asyncDeploymentService.asyncDeleteInstance(this, instanceId, serviceInstance, platformService);

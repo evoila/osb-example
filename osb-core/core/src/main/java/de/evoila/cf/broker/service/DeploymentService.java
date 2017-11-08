@@ -5,10 +5,7 @@ package de.evoila.cf.broker.service;
 
 import java.util.Map;
 
-import de.evoila.cf.broker.exception.ServiceBrokerException;
-import de.evoila.cf.broker.exception.ServiceDefinitionDoesNotExistException;
-import de.evoila.cf.broker.exception.ServiceInstanceDoesNotExistException;
-import de.evoila.cf.broker.exception.ServiceInstanceExistsException;
+import de.evoila.cf.broker.exception.*;
 import de.evoila.cf.broker.model.ServiceInstanceResponse;
 import de.evoila.cf.broker.model.JobProgressResponse;
 
@@ -46,15 +43,15 @@ public abstract interface DeploymentService {
 	 */
 	public ServiceInstanceResponse createServiceInstance(String serviceInstanceId, String serviceDefinitionId,
 			String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
-			Map<String, String> context)
-					throws ServiceInstanceExistsException, ServiceBrokerException,
-					ServiceDefinitionDoesNotExistException;
+			Map<String, String> context, Boolean acceptsIncomplete)
+			throws ServiceInstanceExistsException, ServiceBrokerException,
+			ServiceDefinitionDoesNotExistException, AsyncRequiredException;
 
 	/**
 	 * @param instance
 	 * @throws ServiceInstanceDoesNotExistException 
 	 * @throws ServiceBrokerException 
 	 */
-	public void deleteServiceInstance(String instanceId) throws ServiceBrokerException, ServiceInstanceDoesNotExistException;
+	public void deleteServiceInstance(String instanceId, Boolean acceptsIncomplete) throws ServiceBrokerException, ServiceInstanceDoesNotExistException, AsyncRequiredException;
 
 }

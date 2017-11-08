@@ -59,7 +59,7 @@ public class ServiceInstanceController extends BaseController {
 
 		ServiceInstanceResponse response = deploymentService.createServiceInstance(serviceInstanceId,
 				request.getServiceDefinitionId(), request.getPlanId(), request.getOrganizationGuid(),
-				request.getSpaceGuid(), request.getParameters(), request.getContext());
+				request.getSpaceGuid(), request.getParameters(), request.getContext(), acceptsIncomplete);
 
 
 		if (DashboardUtils.hasDashboard(svc))
@@ -84,18 +84,23 @@ public class ServiceInstanceController extends BaseController {
 
 	@RequestMapping(value = "/service_instances/{instanceId}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteServiceInstance(@PathVariable("instanceId") String instanceId,
-			@RequestParam("service_id") String serviceId, @RequestParam("plan_id") String planId)
+			@RequestParam("service_id") String serviceId, @RequestParam("plan_id") String planId,
+														@RequestParam("accepts_incomplete") Boolean acceptsIncomplete)
 					throws ServiceBrokerException, AsyncRequiredException, ServiceInstanceDoesNotExistException {
 
 		log.debug("DELETE: " + SERVICE_INSTANCE_BASE_PATH + "/{instanceId}"
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId + ", serviceId = " + serviceId
 				+ ", planId = " + planId);
 
-		deploymentService.deleteServiceInstance(instanceId);
+		deploymentService.deleteServiceInstance(instanceId, acceptsIncomplete);
 
 		log.debug("ServiceInstance Deleted: " + instanceId);
 
-		return new ResponseEntity<String>("{}", HttpStatus.OK);
+		if(acceptsIncomplete) {
+			return new ResponseEntity<String>("{}", HttpStatus.ACCEPTED);
+		} else {
+			return new ResponseEntity<String>("{}", HttpStatus.OK);
+		}
 	}
 
 	@Override
