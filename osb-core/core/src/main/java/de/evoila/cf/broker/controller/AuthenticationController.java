@@ -68,7 +68,16 @@ public class AuthenticationController extends BaseController {
     			Dashboard dashboard = serviceDefinition.getDashboard();
     			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
-				String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, "/confirm");
+    			ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
+
+    			String redirectUri;
+
+    			if(serviceInstance.getContext().containsKey("ssoUrl")) {
+    				redirectUri = serviceInstance.getContext().get("ssoUrl");
+				} else {
+					redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, "/confirm");
+				}
+
     			DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder 
     				= new DashboardAuthenticationRedirectBuilder(dashboard,
     						dashboardClient, redirectUri, REQUIRED_SCOPES);
