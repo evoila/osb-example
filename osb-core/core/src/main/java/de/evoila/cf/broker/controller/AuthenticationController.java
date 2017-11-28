@@ -61,7 +61,11 @@ public class AuthenticationController extends BaseController {
     @GetMapping(value = "/{serviceInstanceId}")
     public Object authRedirect(@PathVariable String serviceInstanceId) throws URISyntaxException, IOException {
     	ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
-    	if (serviceDefinition != null && serviceDefinition.getDashboard() != null
+    	ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
+		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey("ssoUrl")){
+			return new ModelAndView("redirect:" + DashboardUtils.ssoUrl(serviceInstance));
+		}
+    	if ( serviceDefinition != null && serviceDefinition.getDashboard() != null
 				&& serviceDefinition.getDashboard().getAuthEndpoint() != null
 				&& DashboardUtils.isURL(serviceDefinition.getDashboard().getAuthEndpoint())) {
     			
@@ -81,7 +85,7 @@ public class AuthenticationController extends BaseController {
     			DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder 
     				= new DashboardAuthenticationRedirectBuilder(dashboard,
     						dashboardClient, redirectUri, REQUIRED_SCOPES);
-    				
+
     			return new ModelAndView("redirect:" + dashboardAuthenticationRedirectBuilder.getRedirectUrl());
     	} else {
 			return this.processErrorResponse("Service Definition of Service Instance could not be found",
@@ -107,14 +111,37 @@ public class AuthenticationController extends BaseController {
 					HttpStatus.UNAUTHORIZED);
 
 		ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
-		if (serviceDefinition != null) {
+		ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
+		if (serviceDefinition != null && serviceInstance != null) {
 			Dashboard dashboard = serviceDefinition.getDashboard();
 			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
 			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
-			CompositeAccessToken  token = OpenIdAuthenticationUtils
-					.getAccessAndRefreshToken(dashboard.getAuthEndpoint(), authCode, dashboardClient, redirectUri);
+			CompositeAccessToken token;
+			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey("ssoUrl")){
+				 token = OpenIdAuthenticationUtils
+												 .getAccessAndRefreshToken(serviceInstance.getContext().get("ssoUrl"),
+																		   authCode,
+																		   dashboardClient,
+																		   redirectUri
+												 );
+				 if(!OpenIdAuthenticationUtils.hasPermissions(serviceInstance, token)){
+					 log.info("User did not have required permissons to acces this resource ");
+					 token = null;
+					 return this.processErrorResponse("You have not the required permissions. Please contact your oranization administartor",
+													  HttpStatus.UNAUTHORIZED);
+				 }
+
+
+			} else {
+				 token = OpenIdAuthenticationUtils
+												 .getAccessAndRefreshToken(dashboard.getAuthEndpoint(),
+																		   authCode,
+																		   dashboardClient,
+																		   redirectUri
+												 );
+			}
 
 			if (token != null) {
 				mav.addObject("token", TOKEN_PREFIX + token.getAccessToken());
@@ -130,6 +157,10 @@ public class AuthenticationController extends BaseController {
 					HttpStatus.UNAUTHORIZED);
 
 		return mav;
+	}
+
+	private boolean checkPermissions () {
+		return false;
 	}
 
 }

@@ -1,6 +1,7 @@
 package evoila.cf.broker.openid;
 
 import de.evoila.cf.broker.model.DashboardClient;
+import de.evoila.cf.broker.model.ServiceInstance;
 import de.evoila.cf.broker.model.oauth.CompositeAccessToken;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -12,8 +13,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Johannes Hiemer.
@@ -68,4 +71,23 @@ public class OpenIdAuthenticationUtils {
         }
     }
 
+    public static boolean hasPermissions (ServiceInstance serviceInstance, CompositeAccessToken token) throws URISyntaxException {
+        RestTemplate template = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer "+ token.getAccessToken());
+        URI uri = new URI(serviceInstance.getContext().get("permissionUrl"));
+
+        ResponseEntity<SSOPermissions> permisions = template.exchange(
+                            new RequestEntity<Object>(headers,HttpMethod.GET,uri),
+                            SSOPermissions.class);
+        return permisions.getBody().permission.equals(PermissionType.USER);
+    }
+
+    public class SSOPermissions {
+
+        private PermissionType  permission;
+    }
+
+    public enum PermissionType { USER, NONE };
 }

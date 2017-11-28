@@ -76,5 +76,7 @@ public class DashboardAuthenticationRedirectBuilder {
 	public void setScopes(String scopes) {
 		this.scopes = scopes;
 	}
-	
+
+
+
 }

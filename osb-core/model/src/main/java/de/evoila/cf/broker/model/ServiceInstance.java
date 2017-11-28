@@ -65,12 +65,13 @@ public class ServiceInstance implements BaseEntity<String> {
 
 	public ServiceInstance(String id, String serviceDefinitionId, String planId, String organizationGuid,
 			String spaceGuid, Map<String, String> parameters, String dashboardUrl) {
-		initialize(id, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
-		setDashboardUrl(dashboardUrl);
+		initialize(id, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters, dashboardUrl,
+				   null, null, null);
 	}
 
 	private void initialize(String id, String serviceDefinitionId, String planId, String organizationGuid,
-			String spaceGuid, Map<String, String> parameters) {
+			String spaceGuid, Map<String, String> parameters, String dashboardUrl, String internalId,
+							List<ServerAddress> hosts, Map<String, String> context) {
 		setId(id);
 		setServiceDefinitionId(serviceDefinitionId);
 		setPlanId(planId);
@@ -78,36 +79,39 @@ public class ServiceInstance implements BaseEntity<String> {
 		setSpaceGuid(spaceGuid);
 		if (parameters != null)
 			setParameters(parameters);
+		if (dashboardUrl != null)
+			setDashboardUrl(dashboardUrl);
+		if (internalId != null)
+			setInternalId(internalId);
+		if(hosts != null)
+			setHosts(hosts);
+		if(context != null)
+			setContext(context);
 	}
 
 	public ServiceInstance(String serviceInstanceId, String serviceDefintionId, String planId, String organizationGuid,
 			String spaceGuid, Map<String, String> parameters, String dashboardUrl, String internalId) {
-		initialize(id, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
-		setInternalId(internalId);
-		setDashboardUrl(dashboardUrl);
+		initialize(id, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters,dashboardUrl, internalId,
+				   null, null);
 	}
 
 	public ServiceInstance(ServiceInstance serviceInstance, String dashboardUrl, String internalId) {
 		initialize(serviceInstance.id, serviceInstance.serviceDefinitionId, serviceInstance.planId,
-				serviceInstance.organizationGuid, serviceInstance.spaceGuid, serviceInstance.parameters);
-		setInternalId(internalId);
-		setDashboardUrl(dashboardUrl);
+				serviceInstance.organizationGuid, serviceInstance.spaceGuid, serviceInstance.parameters, dashboardUrl,
+				   internalId, serviceInstance.getHosts(), serviceInstance.getContext());
 	}
 
 	public ServiceInstance(ServiceInstance serviceInstance, String dashboardUrl, String internalId,
 			List<ServerAddress> hosts) {
 		initialize(serviceInstance.id, serviceInstance.serviceDefinitionId, serviceInstance.planId,
-				serviceInstance.organizationGuid, serviceInstance.spaceGuid, serviceInstance.parameters);
-		setInternalId(internalId);
-		setDashboardUrl(dashboardUrl);
-		setHosts(hosts);
+				serviceInstance.organizationGuid, serviceInstance.spaceGuid, serviceInstance.parameters,dashboardUrl,
+				   internalId, hosts, serviceInstance.getContext());
 	}
 
 	public ServiceInstance(String serviceInstanceId, String serviceDefinitionId, String planId, String organizationGuid,
 			String spaceGuid, Map<String, String> parameters, Map<String, String> context) {
-		initialize(serviceInstanceId, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters);
-		if(context != null)
-			setContext(context);
+		initialize(serviceInstanceId, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters,
+				   null, null, null, context);
 	}
 
 	@Override
