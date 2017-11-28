@@ -1,5 +1,6 @@
 package de.evoila.cf.broker.model;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -188,7 +189,7 @@ public class ServiceInstance implements BaseEntity<String> {
 	}
 
 	public Map<String, String> getContext() {
-		return context;
+		return Collections.unmodifiableMap(this.context);
 	}
 
 	public void setContext(Map<String, String> context) {

@@ -72,8 +72,6 @@ public class AuthenticationController extends BaseController {
     			Dashboard dashboard = serviceDefinition.getDashboard();
     			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
-    			ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
-
     			String redirectUri;
 
     			if(serviceInstance.getContext().containsKey("ssoUrl")) {
@@ -159,8 +157,5 @@ public class AuthenticationController extends BaseController {
 		return mav;
 	}
 
-	private boolean checkPermissions () {
-		return false;
-	}
 
 }
