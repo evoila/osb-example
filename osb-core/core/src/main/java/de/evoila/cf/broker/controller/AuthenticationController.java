@@ -34,6 +34,9 @@ import java.net.URISyntaxException;
 @RequestMapping(value = "/v2/authentication")
 public class AuthenticationController extends BaseController {
 
+	public static final String SSO_URL = "sso_url";
+	public static final String PERMISSION_URL = "permission_url";
+
 	private static final String CONFIRM = "/confirm";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -63,7 +66,7 @@ public class AuthenticationController extends BaseController {
     public Object authRedirect(@PathVariable String serviceInstanceId) throws URISyntaxException, IOException {
     	ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
     	ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
-		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey("ssoUrl")){
+		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
 			return new ModelAndView("redirect:" + DashboardUtils.ssoUrl(serviceInstance));
 		}
     	if ( serviceDefinition != null && serviceDefinition.getDashboard() != null
@@ -75,8 +78,8 @@ public class AuthenticationController extends BaseController {
 
     			String redirectUri;
 
-    			if(serviceInstance.getContext().containsKey("ssoUrl")) {
-    				redirectUri = serviceInstance.getContext().get("ssoUrl");
+    			if(serviceInstance.getContext().containsKey(SSO_URL)) {
+    				redirectUri = serviceInstance.getContext().get(SSO_URL);
 				} else {
 					redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, "/confirm");
 				}
@@ -119,7 +122,7 @@ public class AuthenticationController extends BaseController {
 			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
 			CompositeAccessToken token;
-			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey("ssoUrl")){
+			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
 				 token = OpenIdAuthenticationUtils
 												 .getAccessAndRefreshToken(serviceInstance,
 																		   authCode,

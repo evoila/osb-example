@@ -1,5 +1,6 @@
 package evoila.cf.broker.openid;
 
+import de.evoila.cf.broker.controller.AuthenticationController;
 import de.evoila.cf.broker.model.DashboardClient;
 import de.evoila.cf.broker.model.ServiceInstance;
 import de.evoila.cf.broker.model.oauth.CompositeAccessToken;
@@ -25,6 +26,7 @@ public class OpenIdAuthenticationUtils {
 
     private final static String AUTH_CODE = "code";
 
+
     private static String getAuthCode(String location) throws URISyntaxException {
         URIBuilder uriBuilder = new URIBuilder(location);
         String authCode = null;
@@ -43,7 +45,7 @@ public class OpenIdAuthenticationUtils {
 
         MultiValueMap<String, String> form = getFormBody(code, dashboardClient, dashboardClient.getRedirectUri());
 
-        String oauthEndpoint = instance.getContext().get("ssoUrl")
+        String oauthEndpoint = instance.getContext().get(AuthenticationController.SSO_URL)
                                      .replaceFirst("\\/auth\\?.*", "/token");
 
         ResponseEntity<CompositeAccessToken> token = template.exchange(oauthEndpoint,
@@ -102,7 +104,7 @@ public class OpenIdAuthenticationUtils {
         HttpHeaders headers = new HttpHeaders();
 
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer "+ token.getAccessToken());
-        URI uri = new URI(serviceInstance.getContext().get("permissionUrl"));
+        URI uri = new URI(serviceInstance.getContext().get(AuthenticationController.PERMISSION_URL));
 
         ResponseEntity<SSOPermissions> permissions = template.exchange(
                             new RequestEntity<Object>(headers,HttpMethod.GET,uri),

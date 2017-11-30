@@ -3,6 +3,7 @@
  */
 package de.evoila.cf.broker.controller.utils;
 
+import de.evoila.cf.broker.controller.AuthenticationController;
 import de.evoila.cf.broker.model.DashboardClient;
 import de.evoila.cf.broker.model.ServiceDefinition;
 import de.evoila.cf.broker.model.ServiceInstance;
@@ -56,8 +57,9 @@ public class DashboardUtils {
 	}
 
 	public static String ssoUrl (ServiceInstance serviceInstance) {
-		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey("ssoUrl"))
-			return serviceInstance.getContext().get("ssoUrl")
+		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(
+			AuthenticationController.SSO_URL))
+			return serviceInstance.getContext().get(AuthenticationController.SSO_URL)
 					   .replace("{state}", RandomStringUtils.randomAlphabetic(32))
 			.replace("{nonce}", RandomStringUtils.randomAlphabetic(32));
 		return null;
