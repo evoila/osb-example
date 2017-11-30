@@ -1,0 +1,3 @@
+[submodule "osb-dashboard"]
+	path = osb-dashboard
+	url = https://github.com/evoila/cf-service-broker-dashboard
