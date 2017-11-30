@@ -14,6 +14,7 @@ import de.evoila.cf.broker.model.oauth.CompositeAccessToken;
 import de.evoila.cf.broker.repository.ServiceInstanceRepository;
 import de.evoila.cf.broker.service.CatalogService;
 import evoila.cf.broker.openid.OpenIdAuthenticationUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -110,6 +111,7 @@ public class AuthenticationController extends BaseController {
 
 		ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
 		ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
+
 		if (serviceDefinition != null && serviceInstance != null) {
 			Dashboard dashboard = serviceDefinition.getDashboard();
 			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
@@ -119,15 +121,15 @@ public class AuthenticationController extends BaseController {
 			CompositeAccessToken token;
 			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey("ssoUrl")){
 				 token = OpenIdAuthenticationUtils
-												 .getAccessAndRefreshToken(serviceInstance.getContext().get("ssoUrl"),
+												 .getAccessAndRefreshToken(serviceInstance,
 																		   authCode,
-																		   dashboardClient,
-																		   redirectUri
+																		   dashboardClient
 												 );
 				 if(!OpenIdAuthenticationUtils.hasPermissions(serviceInstance, token)){
 					 log.info("User did not have required permissons to acces this resource ");
 					 token = null;
-					 return this.processErrorResponse("You have not the required permissions. Please contact your oranization administartor",
+					 return this.processErrorResponse("You have not the required permissions to access this page." +
+														  " Please contact your oranization administartor",
 													  HttpStatus.UNAUTHORIZED);
 				 }
 
