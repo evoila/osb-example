@@ -39,11 +39,12 @@ public abstract interface DeploymentService {
 	/**
 	 * @param instance
 	 * @param plan
-	 * @return new ServiceInstance with updated fields
+	 * @param apiLocation
+     * @return new ServiceInstance with updated fields
 	 */
-	public ServiceInstanceResponse createServiceInstance(String serviceInstanceId, String serviceDefinitionId,
-			String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
-			Map<String, String> context, Boolean acceptsIncomplete)
+	public ServiceInstanceResponse createServiceInstance (String serviceInstanceId, String serviceDefinitionId,
+                                                          String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
+                                                          Map<String, String> context, Boolean acceptsIncomplete, String apiLocation)
 			throws ServiceInstanceExistsException, ServiceBrokerException,
 			ServiceDefinitionDoesNotExistException, AsyncRequiredException;
 

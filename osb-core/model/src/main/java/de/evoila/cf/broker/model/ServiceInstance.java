@@ -60,19 +60,20 @@ public class ServiceInstance implements BaseEntity<String> {
 	@JsonProperty("context")
 	private Map<String, String> context;
 
+	private String apiLocation;
 	@SuppressWarnings("unused")
 	private ServiceInstance() {
 	}
 
 	public ServiceInstance(String id, String serviceDefinitionId, String planId, String organizationGuid,
-			String spaceGuid, Map<String, String> parameters, String dashboardUrl) {
+			String spaceGuid, Map<String, String> parameters, String dashboardUrl,  String apiLocation) {
 		initialize(id, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters, dashboardUrl,
-				   null, null, null);
+				   null, null, null, apiLocation);
 	}
 
 	private void initialize(String id, String serviceDefinitionId, String planId, String organizationGuid,
 			String spaceGuid, Map<String, String> parameters, String dashboardUrl, String internalId,
-							List<ServerAddress> hosts, Map<String, String> context) {
+							List<ServerAddress> hosts, Map<String, String> context, String apiLocation) {
 		setId(id);
 		setServiceDefinitionId(serviceDefinitionId);
 		setPlanId(planId);
@@ -88,31 +89,33 @@ public class ServiceInstance implements BaseEntity<String> {
 			setHosts(hosts);
 		if(context != null)
 			setContext(context);
+		setApiLocation(apiLocation);
 	}
 
 	public ServiceInstance(String serviceInstanceId, String serviceDefintionId, String planId, String organizationGuid,
-			String spaceGuid, Map<String, String> parameters, String dashboardUrl, String internalId) {
+			String spaceGuid, Map<String, String> parameters, String dashboardUrl, String internalId, String apiLocation) {
 		initialize(id, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters,dashboardUrl, internalId,
-				   null, null);
+				   null, null, apiLocation);
 	}
 
 	public ServiceInstance(ServiceInstance serviceInstance, String dashboardUrl, String internalId) {
 		initialize(serviceInstance.id, serviceInstance.serviceDefinitionId, serviceInstance.planId,
 				serviceInstance.organizationGuid, serviceInstance.spaceGuid, serviceInstance.parameters, dashboardUrl,
-				   internalId, serviceInstance.getHosts(), serviceInstance.getContext());
+				   internalId, serviceInstance.getHosts(), serviceInstance.getContext(),
+				   serviceInstance.getApiLocation());
 	}
 
 	public ServiceInstance(ServiceInstance serviceInstance, String dashboardUrl, String internalId,
 			List<ServerAddress> hosts) {
 		initialize(serviceInstance.id, serviceInstance.serviceDefinitionId, serviceInstance.planId,
 				serviceInstance.organizationGuid, serviceInstance.spaceGuid, serviceInstance.parameters,dashboardUrl,
-				   internalId, hosts, serviceInstance.getContext());
+				   internalId, hosts, serviceInstance.getContext(), serviceInstance.getApiLocation());
 	}
 
 	public ServiceInstance(String serviceInstanceId, String serviceDefinitionId, String planId, String organizationGuid,
-			String spaceGuid, Map<String, String> parameters, Map<String, String> context) {
+			String spaceGuid, Map<String, String> parameters, Map<String, String> context, String apiLocation) {
 		initialize(serviceInstanceId, serviceDefinitionId, planId, organizationGuid, spaceGuid, parameters,
-				   null, null, null, context);
+				   null, null, null, context, apiLocation);
 	}
 
 	@Override
@@ -194,5 +197,13 @@ public class ServiceInstance implements BaseEntity<String> {
 
 	public void setContext(Map<String, String> context) {
 		this.context = new HashMap<String, String>(context);
+	}
+
+	public String getApiLocation () {
+		return apiLocation;
+	}
+
+	public void setApiLocation (String apiLocation) {
+		this.apiLocation = apiLocation;
 	}
 }

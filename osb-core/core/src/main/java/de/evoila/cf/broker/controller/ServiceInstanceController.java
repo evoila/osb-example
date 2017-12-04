@@ -8,6 +8,7 @@ import de.evoila.cf.broker.service.DeploymentServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,8 +42,9 @@ public class ServiceInstanceController extends BaseController {
 	public ResponseEntity<ServiceInstanceResponse> createServiceInstance(
 			@PathVariable("instanceId") String serviceInstanceId,
 			@RequestParam(value = "accepts_incomplete", required = false) Boolean acceptsIncomplete,
-			@Valid @RequestBody ServiceInstanceRequest request) throws ServiceDefinitionDoesNotExistException,
-					ServiceInstanceExistsException, ServiceBrokerException, AsyncRequiredException {
+			@Valid @RequestBody ServiceInstanceRequest request,
+			@RequestHeader(value="x-api-info-location", required = false) String apiLocation)
+			throws ServiceDefinitionDoesNotExistException, ServiceInstanceExistsException, ServiceBrokerException, AsyncRequiredException {
 
 		if (acceptsIncomplete == null) {
 			throw new AsyncRequiredException();
@@ -59,7 +61,7 @@ public class ServiceInstanceController extends BaseController {
 
 		ServiceInstanceResponse response = deploymentService.createServiceInstance(serviceInstanceId,
 				request.getServiceDefinitionId(), request.getPlanId(), request.getOrganizationGuid(),
-				request.getSpaceGuid(), request.getParameters(), request.getContext(), acceptsIncomplete);
+				request.getSpaceGuid(), request.getParameters(), request.getContext(), acceptsIncomplete, apiLocation);
 
 
 		if (DashboardUtils.hasDashboard(svc))

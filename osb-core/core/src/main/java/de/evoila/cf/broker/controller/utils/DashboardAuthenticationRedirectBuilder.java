@@ -18,12 +18,14 @@ public class DashboardAuthenticationRedirectBuilder {
 	
 	private String baseUrl;
 
+	private String url;
+
 	private String clientId;
 	
 	private String redirectUri;
 	
 	private String scopes;
-	
+
 	public DashboardAuthenticationRedirectBuilder(Dashboard dashboard, DashboardClient dashboadClient, String redirectUri,
 			String scopes) {
 		super();
@@ -31,17 +33,28 @@ public class DashboardAuthenticationRedirectBuilder {
 		this.clientId = dashboadClient.getId();
 		this.redirectUri = redirectUri;
 		this.scopes = scopes;
+		this.url = "/authorize";
+	}
+
+	public DashboardAuthenticationRedirectBuilder(ApiLocationInfo apiInfo, DashboardClient dashboadClient, String redirectUri,
+												  String scopes) {
+		super();
+		this.baseUrl = apiInfo.getAuthorizationEndpoint();
+		this.clientId = dashboadClient.getId();
+		this.redirectUri = redirectUri;
+		this.scopes = scopes;
+		this.url = "";
 	}
 	
 	public String getRedirectUrl() throws URISyntaxException {
-		URIBuilder builder = new URIBuilder(this.baseUrl + "/authorize")				
+		URIBuilder builder = new URIBuilder(this.baseUrl + this.url)
 				.addParameter("client_id", this.clientId)
 				.addParameter("redirect_uri", new URI(this.redirectUri).toString())
-				.addParameter("response_type", "code")
-				.addParameter("scopes", scopes);
+				.addParameter("response_type", "code");
+	 	if(scopes != null && !scopes.equals(""))
+			builder.addParameter("scopes", scopes);
 
 		URI uri = new URI(builder.toString());
-
 		return uri.toString();
 	}
 	

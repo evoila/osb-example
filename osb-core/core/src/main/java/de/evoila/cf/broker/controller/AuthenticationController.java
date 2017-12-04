@@ -4,6 +4,7 @@
 package de.evoila.cf.broker.controller;
 
 import de.evoila.cf.broker.bean.GeneralConfiguration;
+import de.evoila.cf.broker.controller.utils.ApiLocationInfo;
 import de.evoila.cf.broker.controller.utils.DashboardAuthenticationRedirectBuilder;
 import de.evoila.cf.broker.controller.utils.DashboardUtils;
 import de.evoila.cf.broker.model.Dashboard;
@@ -37,7 +38,7 @@ public class AuthenticationController extends BaseController {
 	public static final String SSO_URL = "sso_url";
 	public static final String PERMISSION_URL = "permission_url";
 
-	private static final String CONFIRM = "/confirm";
+	private static final String CONFIRM = "confirm";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -66,9 +67,7 @@ public class AuthenticationController extends BaseController {
     public Object authRedirect(@PathVariable String serviceInstanceId) throws URISyntaxException, IOException {
     	ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
     	ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
-		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
-			return new ModelAndView("redirect:" + DashboardUtils.ssoUrl(serviceInstance));
-		}
+
     	if ( serviceDefinition != null && serviceDefinition.getDashboard() != null
 				&& serviceDefinition.getDashboard().getAuthEndpoint() != null
 				&& DashboardUtils.isURL(serviceDefinition.getDashboard().getAuthEndpoint())) {
@@ -76,17 +75,19 @@ public class AuthenticationController extends BaseController {
     			Dashboard dashboard = serviceDefinition.getDashboard();
     			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
-    			String redirectUri;
+    			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
-    			if(serviceInstance.getContext().containsKey(SSO_URL)) {
-    				redirectUri = serviceInstance.getContext().get(SSO_URL);
-				} else {
-					redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, "/confirm");
+    			if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
+    				ApiLocationInfo info = DashboardUtils.getApiInfo(serviceInstance);
+					DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder
+						= new DashboardAuthenticationRedirectBuilder(
+							info, dashboardClient, redirectUri, "");
+					return new ModelAndView("redirect:" + dashboardAuthenticationRedirectBuilder.getRedirectUrl());
 				}
 
-    			DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder 
-    				= new DashboardAuthenticationRedirectBuilder(dashboard,
-    						dashboardClient, redirectUri, REQUIRED_SCOPES);
+			DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder
+				= new DashboardAuthenticationRedirectBuilder(dashboard,
+															 dashboardClient, redirectUri, REQUIRED_SCOPES);
 
     			return new ModelAndView("redirect:" + dashboardAuthenticationRedirectBuilder.getRedirectUrl());
     	} else {
@@ -104,7 +105,7 @@ public class AuthenticationController extends BaseController {
     		return null;
     }
 
-	@GetMapping(value = "/{serviceInstanceId}" + CONFIRM)
+	@GetMapping(value = "/{serviceInstanceId}/	" + CONFIRM)
     public Object confirm(@PathVariable String serviceInstanceId,
 						  @RequestParam(value = "code") String authCode) throws Exception {
 		ModelAndView mav = new ModelAndView("index");
@@ -119,12 +120,14 @@ public class AuthenticationController extends BaseController {
 			Dashboard dashboard = serviceDefinition.getDashboard();
 			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
+
 			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
 			CompositeAccessToken token;
 			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
+				ApiLocationInfo info = DashboardUtils.getApiInfo(serviceInstance);
 				 token = OpenIdAuthenticationUtils
-												 .getAccessAndRefreshToken(serviceInstance,
+												 .getAccessAndRefreshToken(serviceInstance, info,
 																		   authCode,
 																		   dashboardClient
 												 );

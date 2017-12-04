@@ -24,9 +24,6 @@ import de.evoila.cf.broker.repository.JobRepository;
 import de.evoila.cf.broker.repository.PlatformRepository;
 import de.evoila.cf.broker.repository.ServiceDefinitionRepository;
 import de.evoila.cf.broker.repository.ServiceInstanceRepository;
-import de.evoila.cf.broker.service.AsyncDeploymentService;
-import de.evoila.cf.broker.service.DeploymentService;
-import de.evoila.cf.broker.service.PlatformService;
 import de.evoila.cf.cpi.custom.props.DomainBasedCustomPropertyHandler;
 
 /**
@@ -73,9 +70,9 @@ public class DeploymentServiceImpl implements DeploymentService {
 
 
 	@Override
-	public ServiceInstanceResponse createServiceInstance(String serviceInstanceId, String serviceDefinitionId,
-			String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
-			Map<String, String> context, Boolean acceptsIncomplete)
+	public ServiceInstanceResponse createServiceInstance (String serviceInstanceId, String serviceDefinitionId,
+                                                          String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
+                                                          Map<String, String> context, Boolean acceptsIncomplete, String apiLocation)
 			throws ServiceInstanceExistsException, ServiceBrokerException,
 			ServiceDefinitionDoesNotExistException, AsyncRequiredException {
 
@@ -90,7 +87,7 @@ public class DeploymentServiceImpl implements DeploymentService {
 				parameters == null ? new HashMap<String, String>()
 						: new HashMap<String, String>(parameters),
 				context == null ? new HashMap<String, String>() 
-						: new HashMap<String, String>(context));
+						: new HashMap<String, String>(context), apiLocation);
 
 		Plan plan = serviceDefinitionRepository.getPlan(planId);
 

@@ -28,7 +28,7 @@ public class ServiceInstanceData {
 		ServiceInstance serviceInstance = new ServiceInstance(UUID.randomUUID().toString(), 
 				UUID.randomUUID().toString(), createDockerData().getId(), 
 				UUID.randomUUID().toString(), UUID.randomUUID().toString(), 
-				null, "http://currently.not/available");
+				null, "http://currently.not/available", null);
 		
 		return serviceInstance;
 	}
@@ -45,7 +45,7 @@ public class ServiceInstanceData {
 		ServiceInstance serviceInstance = new ServiceInstance(UUID.randomUUID().toString(), 
 				UUID.randomUUID().toString(), createOpenstackPlanData().getId(), 
 				UUID.randomUUID().toString(), UUID.randomUUID().toString(), 
-				null, "http://currently.not/available");
+				null, "http://currently.not/available", null);
 		
 		return serviceInstance;
 	}

@@ -33,13 +33,13 @@ public class ServiceInstanceFixture {
 	public static ServiceInstance getServiceInstance() {
 		return new ServiceInstance("service-instance-one-id", "service-one-id", "plan-one-id",
 				DataFixture.getOrgOneGuid(), DataFixture.getSpaceOneGuid(), new ConcurrentHashMap<String, String>(),
-				"dashboard_url");
+				"dashboard_url",null);
 	}
 
 	public static ServiceInstance getServiceInstanceTwo() {
 		return new ServiceInstance("service-instance-two-id", "service-two-id", "plan-two-id",
 				DataFixture.getOrgOneGuid(), DataFixture.getSpaceOneGuid(), new ConcurrentHashMap<String, String>(),
-				"dashboard_url");
+				"dashboard_url",null);
 	}
 
 	public static String getServiceInstanceId() {

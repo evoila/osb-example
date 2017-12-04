@@ -1,6 +1,7 @@
 package evoila.cf.broker.openid;
 
 import de.evoila.cf.broker.controller.AuthenticationController;
+import de.evoila.cf.broker.controller.utils.ApiLocationInfo;
 import de.evoila.cf.broker.model.DashboardClient;
 import de.evoila.cf.broker.model.ServiceInstance;
 import de.evoila.cf.broker.model.oauth.CompositeAccessToken;
@@ -37,16 +38,18 @@ public class OpenIdAuthenticationUtils {
         return authCode;
     }
 
-    public static CompositeAccessToken getAccessAndRefreshToken(ServiceInstance instance, String code, DashboardClient dashboardClient) throws RestClientException {
-        String clientBasicAuth = getClientBasicAuthHeader(dashboardClient.getId(),  dashboardClient.getSecret());
+    public static CompositeAccessToken getAccessAndRefreshToken(ServiceInstance instance,
+                                                                ApiLocationInfo info,
+                                                                String code,
+                                                                DashboardClient dashboardClient
+                                                                ) throws RestClientException {
         RestTemplate template = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " +code);
 
         MultiValueMap<String, String> form = getFormBody(code, dashboardClient, dashboardClient.getRedirectUri());
 
-        String oauthEndpoint = instance.getContext().get(AuthenticationController.SSO_URL)
-                                     .replaceFirst("\\/auth\\?.*", "/token");
+        String oauthEndpoint = info.getTokenEndpoint();
 
         ResponseEntity<CompositeAccessToken> token = template.exchange(oauthEndpoint,
                                                                        HttpMethod.POST, new HttpEntity<>(form, headers),
