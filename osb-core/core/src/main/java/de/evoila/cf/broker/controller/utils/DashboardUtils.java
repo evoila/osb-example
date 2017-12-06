@@ -59,23 +59,6 @@ public class DashboardUtils {
 		return path + "/" + segment;
 	}
 
-	public static String ssoUrl (ServiceInstance serviceInstance, ApiLocationInfo info, String redirectUri) {
-		if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(
-			AuthenticationController.SSO_URL)) {
-
-			String ssoUrl = serviceInstance.getContext().get(AuthenticationController.SSO_URL);
-			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(ssoUrl);
-			builder.replaceQueryParam("state", RandomStringUtils.randomAlphabetic(32));
-			builder.replaceQueryParam("nonce", RandomStringUtils.randomAlphabetic(32));
-			builder.replaceQueryParam("redirect_uri", redirectUri);
-
-
-			return builder.toUriString();
-		}
-		return null;
-
-	}
-
 	public static ApiLocationInfo getApiInfo (ServiceInstance serviceInstance) {
 		if(serviceInstance != null && serviceInstance.getApiLocation() != null){
 			RestTemplate template = new RestTemplate();

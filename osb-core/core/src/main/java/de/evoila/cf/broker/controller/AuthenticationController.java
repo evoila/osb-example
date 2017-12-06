@@ -35,7 +35,6 @@ import java.net.URISyntaxException;
 @RequestMapping(value = "/v2/authentication")
 public class AuthenticationController extends BaseController {
 
-	public static final String SSO_URL = "sso_url";
 	public static final String PERMISSION_URL = "permission_url";
 
 	private static final String CONFIRM = "confirm";
@@ -77,7 +76,7 @@ public class AuthenticationController extends BaseController {
 
     			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
-    			if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
+    			if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(PERMISSION_URL)){
     				ApiLocationInfo info = DashboardUtils.getApiInfo(serviceInstance);
 					DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder
 						= new DashboardAuthenticationRedirectBuilder(
@@ -105,7 +104,7 @@ public class AuthenticationController extends BaseController {
     		return null;
     }
 
-	@GetMapping(value = "/{serviceInstanceId}/	" + CONFIRM)
+	@GetMapping(value = "/{serviceInstanceId}/" + CONFIRM)
     public Object confirm(@PathVariable String serviceInstanceId,
 						  @RequestParam(value = "code") String authCode) throws Exception {
 		ModelAndView mav = new ModelAndView("index");
@@ -124,21 +123,24 @@ public class AuthenticationController extends BaseController {
 			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
 			CompositeAccessToken token;
-			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(SSO_URL)){
+			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(PERMISSION_URL)){
 				ApiLocationInfo info = DashboardUtils.getApiInfo(serviceInstance);
 				 token = OpenIdAuthenticationUtils
 												 .getAccessAndRefreshToken(serviceInstance, info,
 																		   authCode,
-																		   dashboardClient
+																		   dashboardClient,
+																		   redirectUri
 												 );
+
+				 log.info("Token aquired checking permissions");
 				 if(!OpenIdAuthenticationUtils.hasPermissions(serviceInstance, token)){
-					 log.info("User did not have required permissons to acces this resource ");
+					 log.info("User did not have required permissions to access this resource ");
 					 token = null;
 					 return this.processErrorResponse("You have not the required permissions to access this page." +
-														  " Please contact your oranization administartor",
+														  " Please contact your organization administrator",
 													  HttpStatus.UNAUTHORIZED);
 				 }
-
+				log.info("User permission ok redirect to dashboard");
 
 			} else {
 				 token = OpenIdAuthenticationUtils
@@ -161,7 +163,7 @@ public class AuthenticationController extends BaseController {
 		} else
 			return this.processErrorResponse("Service Definition of Service Instance could not be found",
 					HttpStatus.UNAUTHORIZED);
-
+		log.info("Returning dashboard");
 		return mav;
 	}
 
