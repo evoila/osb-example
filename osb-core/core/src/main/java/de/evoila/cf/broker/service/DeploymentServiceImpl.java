@@ -9,12 +9,16 @@ import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 
-import de.evoila.cf.broker.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.evoila.cf.broker.exception.PlatformException;
+import de.evoila.cf.broker.exception.ServiceBrokerException;
+import de.evoila.cf.broker.exception.ServiceDefinitionDoesNotExistException;
+import de.evoila.cf.broker.exception.ServiceInstanceDoesNotExistException;
+import de.evoila.cf.broker.exception.ServiceInstanceExistsException;
 import de.evoila.cf.broker.model.JobProgress;
 import de.evoila.cf.broker.model.JobProgressResponse;
 import de.evoila.cf.broker.model.Plan;
@@ -24,6 +28,9 @@ import de.evoila.cf.broker.repository.JobRepository;
 import de.evoila.cf.broker.repository.PlatformRepository;
 import de.evoila.cf.broker.repository.ServiceDefinitionRepository;
 import de.evoila.cf.broker.repository.ServiceInstanceRepository;
+import de.evoila.cf.broker.service.AsyncDeploymentService;
+import de.evoila.cf.broker.service.DeploymentService;
+import de.evoila.cf.broker.service.PlatformService;
 import de.evoila.cf.cpi.custom.props.DomainBasedCustomPropertyHandler;
 
 /**
@@ -70,11 +77,12 @@ public class DeploymentServiceImpl implements DeploymentService {
 
 
 	@Override
-	public ServiceInstanceResponse createServiceInstance (String serviceInstanceId, String serviceDefinitionId,
-                                                          String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
-                                                          Map<String, String> context, Boolean acceptsIncomplete, String apiLocation)
-			throws ServiceInstanceExistsException, ServiceBrokerException,
-			ServiceDefinitionDoesNotExistException, AsyncRequiredException {
+	public ServiceInstanceResponse createServiceInstance(String serviceInstanceId, String serviceDefinitionId,
+			String planId, String organizationGuid, String spaceGuid, Map<String, String> parameters,
+			Map<String, String> context)
+					throws ServiceInstanceExistsException, ServiceBrokerException,
+					ServiceDefinitionDoesNotExistException {
+
 
 		serviceDefinitionRepository.validateServiceId(serviceDefinitionId);
 
@@ -87,7 +95,7 @@ public class DeploymentServiceImpl implements DeploymentService {
 				parameters == null ? new HashMap<String, String>()
 						: new HashMap<String, String>(parameters),
 				context == null ? new HashMap<String, String>() 
-						: new HashMap<String, String>(context), apiLocation);
+						: new HashMap<String, String>(context));
 
 		Plan plan = serviceDefinitionRepository.getPlan(planId);
 
@@ -96,15 +104,11 @@ public class DeploymentServiceImpl implements DeploymentService {
 		if(platformService == null) {
 			throw new ServiceDefinitionDoesNotExistException(planId);
 		}
-
-		if(!acceptsIncomplete && !platformService.isSyncPossibleOnCreate(plan)) {
-			throw new AsyncRequiredException();
-		}
 		
 		if (platformService.isSyncPossibleOnCreate(plan)) {
 			return syncCreateInstance(serviceInstance, parameters, plan, platformService);
 		} else {
-			ServiceInstanceResponse serviceInstanceResponse = new ServiceInstanceResponse(serviceInstance, acceptsIncomplete);
+			ServiceInstanceResponse serviceInstanceResponse = new ServiceInstanceResponse(serviceInstance, true);
 
 			serviceInstanceRepository.addServiceInstance(serviceInstance.getId(), serviceInstance);
 
@@ -129,7 +133,13 @@ public class DeploymentServiceImpl implements DeploymentService {
 
 			createdServiceInstance = platformService.createInstance(serviceInstance, plan, mergedProperties);
 		} catch (PlatformException e) {
+			try {
+				platformService.deleteServiceInstance(serviceInstance);
+			} catch (PlatformException e1) {
+				throw new ServiceBrokerException("Could not delete failed instance " +serviceInstance.getId() + " due to: ", e);
+			}
 			serviceInstanceRepository.deleteServiceInstance(serviceInstance.getId());
+
 
 			throw new ServiceBrokerException("Could not create instance due to: ", e);
 		}
@@ -139,14 +149,20 @@ public class DeploymentServiceImpl implements DeploymentService {
 		else {
 			serviceInstanceRepository.deleteServiceInstance(serviceInstance.getId());
 
-			throw new ServiceBrokerException(
-					"Internal error. Service instance was not created. ID was: " + serviceInstance.getId());
+			throw new ServiceBrokerException("Internal error. Service instance was not created. ID was: " + serviceInstance.getId());
 		}
 
 		try {
 			createdServiceInstance = platformService.postProvisioning(createdServiceInstance, plan);
 		} catch (PlatformException e) {
+			try {
+				platformService.deleteServiceInstance(serviceInstance);
+				serviceInstanceRepository.deleteServiceInstance(serviceInstance.getId());
+			} catch (PlatformException e1) {
+				throw new ServiceBrokerException("Could not delete failed instance " +serviceInstance.getId() + " due to: ", e);
+			}
 			throw new ServiceBrokerException("Error during service availability verification", e);
+
 		}
 
 		return new ServiceInstanceResponse(createdServiceInstance, false);
@@ -169,8 +185,8 @@ public class DeploymentServiceImpl implements DeploymentService {
 	 * java.lang.String)
 	 */
 	@Override
-	public void deleteServiceInstance(String instanceId, Boolean acceptsIncomplete)
-			throws ServiceBrokerException, ServiceInstanceDoesNotExistException, AsyncRequiredException {
+	public void deleteServiceInstance(String instanceId)
+			throws ServiceBrokerException, ServiceInstanceDoesNotExistException {
 		ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(instanceId);
 
 		if (serviceInstance == null) {
@@ -181,11 +197,8 @@ public class DeploymentServiceImpl implements DeploymentService {
 		
 		PlatformService platformService = platformRepository.getPlatformService(plan.getPlatform());
 
-		if(!acceptsIncomplete && !platformService.isSyncPossibleOnDelete(serviceInstance)) {
-			throw new AsyncRequiredException();
-		}
-
-		if (platformService.isSyncPossibleOnDelete(serviceInstance)) {
+		if (platformService.isSyncPossibleOnDelete(serviceInstance)
+				&& platformService.isSyncPossibleOnDelete(serviceInstance)) {
 			syncDeleteInstance(serviceInstance, platformService);
 		} else {
 			asyncDeploymentService.asyncDeleteInstance(this, instanceId, serviceInstance, platformService);

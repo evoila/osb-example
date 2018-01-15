@@ -3,14 +3,8 @@
  */
 package de.evoila.cf.broker.controller.utils;
 
-import com.sun.javafx.fxml.builder.URLBuilder;
-import de.evoila.cf.broker.controller.AuthenticationController;
 import de.evoila.cf.broker.model.DashboardClient;
 import de.evoila.cf.broker.model.ServiceDefinition;
-import de.evoila.cf.broker.model.ServiceInstance;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URL;
 
@@ -58,14 +52,5 @@ public class DashboardUtils {
 
 		return path + "/" + segment;
 	}
-
-	public static ApiLocationInfo getApiInfo (ServiceInstance serviceInstance) {
-		if(serviceInstance != null && serviceInstance.getApiLocation() != null){
-			RestTemplate template = new RestTemplate();
-			return template.getForEntity(serviceInstance.getApiLocation(), ApiLocationInfo.class).getBody();
-		}
-		return null;
-	}
-
 
 }

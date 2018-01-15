@@ -4,7 +4,6 @@
 package de.evoila.cf.broker.controller;
 
 import de.evoila.cf.broker.bean.GeneralConfiguration;
-import de.evoila.cf.broker.controller.utils.ApiLocationInfo;
 import de.evoila.cf.broker.controller.utils.DashboardAuthenticationRedirectBuilder;
 import de.evoila.cf.broker.controller.utils.DashboardUtils;
 import de.evoila.cf.broker.model.Dashboard;
@@ -15,7 +14,6 @@ import de.evoila.cf.broker.model.oauth.CompositeAccessToken;
 import de.evoila.cf.broker.repository.ServiceInstanceRepository;
 import de.evoila.cf.broker.service.CatalogService;
 import evoila.cf.broker.openid.OpenIdAuthenticationUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -35,9 +33,7 @@ import java.net.URISyntaxException;
 @RequestMapping(value = "/v2/authentication")
 public class AuthenticationController extends BaseController {
 
-	public static final String PERMISSION_URL = "permission_url";
-
-	private static final String CONFIRM = "confirm";
+	private static final String CONFIRM = "/confirm";
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -65,29 +61,18 @@ public class AuthenticationController extends BaseController {
     @GetMapping(value = "/{serviceInstanceId}")
     public Object authRedirect(@PathVariable String serviceInstanceId) throws URISyntaxException, IOException {
     	ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
-    	ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
-
-    	if ( serviceDefinition != null && serviceDefinition.getDashboard() != null
+    	if (serviceDefinition != null && serviceDefinition.getDashboard() != null
 				&& serviceDefinition.getDashboard().getAuthEndpoint() != null
 				&& DashboardUtils.isURL(serviceDefinition.getDashboard().getAuthEndpoint())) {
     			
     			Dashboard dashboard = serviceDefinition.getDashboard();
     			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
-    			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
-
-    			if(serviceInstance != null && serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(PERMISSION_URL)){
-    				ApiLocationInfo info = DashboardUtils.getApiInfo(serviceInstance);
-					DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder
-						= new DashboardAuthenticationRedirectBuilder(
-							info, dashboardClient, redirectUri, "");
-					return new ModelAndView("redirect:" + dashboardAuthenticationRedirectBuilder.getRedirectUrl());
-				}
-
-			DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder
-				= new DashboardAuthenticationRedirectBuilder(dashboard,
-															 dashboardClient, redirectUri, REQUIRED_SCOPES);
-
+				String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, "/confirm");
+    			DashboardAuthenticationRedirectBuilder dashboardAuthenticationRedirectBuilder 
+    				= new DashboardAuthenticationRedirectBuilder(dashboard,
+    						dashboardClient, redirectUri, REQUIRED_SCOPES);
+    				
     			return new ModelAndView("redirect:" + dashboardAuthenticationRedirectBuilder.getRedirectUrl());
     	} else {
 			return this.processErrorResponse("Service Definition of Service Instance could not be found",
@@ -104,7 +89,7 @@ public class AuthenticationController extends BaseController {
     		return null;
     }
 
-	@GetMapping(value = "/{serviceInstanceId}/" + CONFIRM)
+	@GetMapping(value = "/{serviceInstanceId}" + CONFIRM)
     public Object confirm(@PathVariable String serviceInstanceId,
 						  @RequestParam(value = "code") String authCode) throws Exception {
 		ModelAndView mav = new ModelAndView("index");
@@ -113,43 +98,14 @@ public class AuthenticationController extends BaseController {
 					HttpStatus.UNAUTHORIZED);
 
 		ServiceDefinition serviceDefinition = resolveServiceDefinitionByServiceInstanceId(serviceInstanceId);
-		ServiceInstance serviceInstance = serviceInstanceRepository.getServiceInstance(serviceInstanceId);
-
-		if (serviceDefinition != null && serviceInstance != null) {
+		if (serviceDefinition != null) {
 			Dashboard dashboard = serviceDefinition.getDashboard();
 			DashboardClient dashboardClient = serviceDefinition.getDashboardClient();
 
-
 			String redirectUri =  DashboardUtils.redirectUri(dashboardClient, serviceInstanceId, CONFIRM);
 
-			CompositeAccessToken token;
-			if(serviceInstance.getContext() != null && serviceInstance.getContext().containsKey(PERMISSION_URL)){
-				ApiLocationInfo info = DashboardUtils.getApiInfo(serviceInstance);
-				 token = OpenIdAuthenticationUtils
-												 .getAccessAndRefreshToken(serviceInstance, info,
-																		   authCode,
-																		   dashboardClient,
-																		   redirectUri
-												 );
-
-				 log.info("Token aquired checking permissions");
-				 if(!OpenIdAuthenticationUtils.hasPermissions(serviceInstance, token)){
-					 log.info("User did not have required permissions to access this resource ");
-					 token = null;
-					 return this.processErrorResponse("You have not the required permissions to access this page." +
-														  " Please contact your organization administrator",
-													  HttpStatus.UNAUTHORIZED);
-				 }
-				log.info("User permission ok redirect to dashboard");
-
-			} else {
-				 token = OpenIdAuthenticationUtils
-												 .getAccessAndRefreshToken(dashboard.getAuthEndpoint(),
-																		   authCode,
-																		   dashboardClient,
-																		   redirectUri
-												 );
-			}
+			CompositeAccessToken  token = OpenIdAuthenticationUtils
+					.getAccessAndRefreshToken(dashboard.getAuthEndpoint(), authCode, dashboardClient, redirectUri);
 
 			if (token != null) {
 				mav.addObject("token", TOKEN_PREFIX + token.getAccessToken());
@@ -163,9 +119,8 @@ public class AuthenticationController extends BaseController {
 		} else
 			return this.processErrorResponse("Service Definition of Service Instance could not be found",
 					HttpStatus.UNAUTHORIZED);
-		log.info("Returning dashboard");
+
 		return mav;
 	}
-
 
 }

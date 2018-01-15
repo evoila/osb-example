@@ -8,7 +8,6 @@ import de.evoila.cf.broker.service.DeploymentServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,9 +41,8 @@ public class ServiceInstanceController extends BaseController {
 	public ResponseEntity<ServiceInstanceResponse> createServiceInstance(
 			@PathVariable("instanceId") String serviceInstanceId,
 			@RequestParam(value = "accepts_incomplete", required = false) Boolean acceptsIncomplete,
-			@Valid @RequestBody ServiceInstanceRequest request,
-			@RequestHeader(value="x-api-info-location", required = false) String apiLocation)
-			throws ServiceDefinitionDoesNotExistException, ServiceInstanceExistsException, ServiceBrokerException, AsyncRequiredException {
+			@Valid @RequestBody ServiceInstanceRequest request) throws ServiceDefinitionDoesNotExistException,
+					ServiceInstanceExistsException, ServiceBrokerException, AsyncRequiredException {
 
 		if (acceptsIncomplete == null) {
 			throw new AsyncRequiredException();
@@ -61,7 +59,7 @@ public class ServiceInstanceController extends BaseController {
 
 		ServiceInstanceResponse response = deploymentService.createServiceInstance(serviceInstanceId,
 				request.getServiceDefinitionId(), request.getPlanId(), request.getOrganizationGuid(),
-				request.getSpaceGuid(), request.getParameters(), request.getContext(), acceptsIncomplete, apiLocation);
+				request.getSpaceGuid(), request.getParameters(), request.getContext());
 
 
 		if (DashboardUtils.hasDashboard(svc))
@@ -86,23 +84,18 @@ public class ServiceInstanceController extends BaseController {
 
 	@RequestMapping(value = "/service_instances/{instanceId}", method = RequestMethod.DELETE)
 	public ResponseEntity<String> deleteServiceInstance(@PathVariable("instanceId") String instanceId,
-			@RequestParam("service_id") String serviceId, @RequestParam("plan_id") String planId,
-														@RequestParam("accepts_incomplete") Boolean acceptsIncomplete)
+			@RequestParam("service_id") String serviceId, @RequestParam("plan_id") String planId)
 					throws ServiceBrokerException, AsyncRequiredException, ServiceInstanceDoesNotExistException {
 
 		log.debug("DELETE: " + SERVICE_INSTANCE_BASE_PATH + "/{instanceId}"
 				+ ", deleteServiceInstanceBinding(), serviceInstanceId = " + instanceId + ", serviceId = " + serviceId
 				+ ", planId = " + planId);
 
-		deploymentService.deleteServiceInstance(instanceId, acceptsIncomplete);
+		deploymentService.deleteServiceInstance(instanceId);
 
 		log.debug("ServiceInstance Deleted: " + instanceId);
 
-		if(acceptsIncomplete) {
-			return new ResponseEntity<String>("{}", HttpStatus.ACCEPTED);
-		} else {
-			return new ResponseEntity<String>("{}", HttpStatus.OK);
-		}
+		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 
 	@Override

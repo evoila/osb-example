@@ -25,7 +25,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
  * 
  */
 @Configuration
-@Order(1)
 @EnableWebSecurity
 public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter  {
 
@@ -75,7 +74,7 @@ public class CustomSecurityConfiguration extends WebSecurityConfigurerAdapter  {
 
 
 	@Configuration
-	@Order(5)
+	@Order(1)
 	public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
 		@Bean

@@ -27,7 +27,7 @@ public class ServiceInstanceResponse {
 
 	public ServiceInstanceResponse(ServiceInstance serviceInstance, boolean isAsync) {
 		this.dashboardUrl = serviceInstance.getDashboardUrl();
-		this.isAsync = isAsync;
+		this.isAsync = true;
 	}
 
 	public ServiceInstanceResponse(String dashboardUrl) {
