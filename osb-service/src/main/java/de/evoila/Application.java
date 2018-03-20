@@ -13,9 +13,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.Assert;
 
-import de.evoila.cf.cpi.custom.props.DomainBasedCustomPropertyHandler;
-import de.evoila.cf.cpi.custom.props.ExampleCustomPropertyHandler;
-
 /**
  * @author Johannes Hiemer.
  * Deploying to Space for testing purposes is as follows:
@@ -29,11 +26,6 @@ public class Application {
 		Map<String, String> customProperties = new HashMap<String, String>();
 
 		return customProperties;
-	}
-
-	@Bean
-	public DomainBasedCustomPropertyHandler domainPropertyHandler() {
-		return new ExampleCustomPropertyHandler();
 	}
 
 	public static void main(String[] args) {

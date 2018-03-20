@@ -29,19 +29,18 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
 	private ExampleBackendService exampleDbService;
 	
 	@Override
-	protected void createInstance(CustomExistingServiceConnection connection, String database) throws PlatformException {
+	protected void createInstance(CustomExistingServiceConnection connection, String database) {
 		if(connection instanceof ExampleBackendService)
 			createInstance((ExampleBackendService) connection, database);
 	}
 		
 	@Override
-	protected void deleteInstance(CustomExistingServiceConnection connection, String database) throws PlatformException {
+	protected void deleteInstance(CustomExistingServiceConnection connection, String database) {
 		if(connection instanceof ExampleBackendService)
 			deleteInstance((ExampleBackendService) connection, database);
 	}
 
-	protected void deleteInstance(ExampleBackendService connection, String database)
-			throws PlatformException {
+	protected void deleteInstance(ExampleBackendService connection, String database) {
 		log.info("Deleting the Example Service...");		
 	}
 
@@ -50,16 +49,8 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
 		return exampleDbService;
 	}
 
-	protected void createInstance(ExampleBackendService connection, String database)
-			throws PlatformException {
+	protected void createInstance(ExampleBackendService connection, String database) {
 		log.info("Creating the Example Service...");
-	}
-	
-	@Override
-	public ServiceInstance postProvisioning(ServiceInstance serviceInstance, Plan plan) throws PlatformException {
-		log.info("Executing Post Provisioning the Example Service...");
-		
-		return serviceInstance;
 	}
 
 }
