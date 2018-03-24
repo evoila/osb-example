@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.evoila.cf.broker.model.*;
+import de.evoila.cf.broker.util.RandomString;
+import de.evoila.cf.broker.util.ServiceInstanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,24 +27,19 @@ public class ExampleBindingService extends BindingServiceImpl {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private SecureRandom random = new SecureRandom();
+    RandomString randomString = new RandomString(10);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.evoila.cf.broker.service.impl.BindingServiceImpl#createCredentials(
-	 * java.lang.String, de.evoila.cf.broker.model.ServiceInstance,
-	 * de.evoila.cf.broker.model.ServerAddress)
-	 */
 	@Override
 	protected Map<String, Object> createCredentials(String bindingId, ServiceInstance serviceInstance,
-			ServerAddress host, Plan plan) throws ServiceBrokerException {
-		log.info("Binding the Example Service...");
-		
-		String dbURL = String.format("example://%s:%s@%s:%d/%s", this.nextSessionId(), 
-				this.nextSessionId(), host.getIp(), host.getPort(),
-				serviceInstance.getId());
+			Plan plan, ServerAddress host) throws ServiceBrokerException {
+        String endpoint = ServiceInstanceUtils.connectionUrl(serviceInstance.getHosts());
+
+        if (host != null)
+            endpoint = host.getIp() + ":" + host.getPort();
+
+		String dbURL = String.format("example://%s:%s@%s/%s", randomString.nextString(),
+                randomString.nextString(), endpoint,
+                randomString.nextString());
 
 		Map<String, Object> credentials = new HashMap<String, Object>();
 		credentials.put("uri", dbURL);
@@ -51,7 +48,7 @@ public class ExampleBindingService extends BindingServiceImpl {
 	}
 
 	@Override
-	protected void deleteBinding(String bindingId, ServiceInstance serviceInstance) throws ServiceBrokerException {
+	protected void deleteBinding(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) throws ServiceBrokerException {
 		log.info("Unbinding the Example Service...");
 	}
 
@@ -60,20 +57,9 @@ public class ExampleBindingService extends BindingServiceImpl {
 		throw new UnsupportedOperationException();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * de.evoila.cf.broker.service.impl.BindingServiceImpl#bindRoute(de.evoila.
-	 * cf.broker.model.ServiceInstance, java.lang.String)
-	 */
 	@Override
 	protected RouteBinding bindRoute(ServiceInstance serviceInstance, String route) {
 		throw new UnsupportedOperationException();
 	}
-	
-    public String nextSessionId() {
-        return new BigInteger(130, random).toString(32);
-    }
 
 }

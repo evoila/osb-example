@@ -1,9 +1,7 @@
 /**
  * 
  */
-package de.evoila.cf.broker.service.sample.raw;
-
-import de.evoila.cf.cpi.existing.CustomExistingServiceConnection;
+package de.evoila.cf.broker.service.custom;
 
 /**
  * @author Johannes Hiemer
@@ -15,7 +13,7 @@ import de.evoila.cf.cpi.existing.CustomExistingServiceConnection;
  * Frameworks but instead work with the Drivers directly against the native
  * API.
  */
-public class ExampleBackendRawService implements CustomExistingServiceConnection {
+public class ExampleBackendRawService {
 	
 	private boolean initialized;
 	
