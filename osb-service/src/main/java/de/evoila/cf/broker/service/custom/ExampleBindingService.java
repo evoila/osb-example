@@ -3,20 +3,16 @@
  */
 package de.evoila.cf.broker.service.custom;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
-
 import de.evoila.cf.broker.model.*;
+import de.evoila.cf.broker.service.impl.BindingServiceImpl;
 import de.evoila.cf.broker.util.RandomString;
 import de.evoila.cf.broker.util.ServiceInstanceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import de.evoila.cf.broker.exception.ServiceBrokerException;
-import de.evoila.cf.broker.service.impl.BindingServiceImpl;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Johannes Hiemer.
@@ -30,8 +26,8 @@ public class ExampleBindingService extends BindingServiceImpl {
     RandomString randomString = new RandomString(10);
 
 	@Override
-	protected Map<String, Object> createCredentials(String bindingId, ServiceInstance serviceInstance,
-			Plan plan, ServerAddress host) throws ServiceBrokerException {
+	protected Map<String, Object> createCredentials(String bindingId, ServiceInstanceBindingRequest serviceInstanceBindingRequest,
+                                                    ServiceInstance serviceInstance, Plan plan, ServerAddress host) {
         String endpoint = ServiceInstanceUtils.connectionUrl(serviceInstance.getHosts());
 
         if (host != null)
@@ -48,7 +44,7 @@ public class ExampleBindingService extends BindingServiceImpl {
 	}
 
 	@Override
-	protected void deleteBinding(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) throws ServiceBrokerException {
+	protected void deleteBinding(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) {
 		log.info("Unbinding the Example Service...");
 	}
 
