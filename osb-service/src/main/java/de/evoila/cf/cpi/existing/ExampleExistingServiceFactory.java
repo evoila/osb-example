@@ -31,7 +31,7 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
     private ExistingEndpointBean existingEndpointBean;
 
     @Override
-    public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, String> customParameters) {
+    public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> customParameters) {
         createDatabase(serviceInstance, plan);
 
         return serviceInstance;
