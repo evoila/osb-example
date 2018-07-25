@@ -3,6 +3,7 @@
  */
 package de.evoila.cf.broker.service.custom;
 
+import de.evoila.cf.broker.exception.ServiceBrokerException;
 import de.evoila.cf.broker.model.*;
 import de.evoila.cf.broker.service.impl.BindingServiceImpl;
 import de.evoila.cf.broker.util.RandomString;
@@ -44,11 +45,6 @@ public class ExampleBindingService extends BindingServiceImpl {
 	}
 
 	@Override
-	protected void deleteBinding(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) {
-		log.info("Unbinding the Example Service...");
-	}
-
-	@Override
 	public ServiceInstanceBinding getServiceInstanceBinding(String id) {
 		throw new UnsupportedOperationException();
 	}
@@ -58,4 +54,8 @@ public class ExampleBindingService extends BindingServiceImpl {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	protected void unbindService(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) throws ServiceBrokerException {
+		log.info("Unbinding the Example Service...");
+	}
 }
