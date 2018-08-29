@@ -1,0 +1,79 @@
+##vm type and disk type dont work
+#product-properties:
+#  .properties.catalog_services_0_name:
+#    value: osb-mysql
+#  .properties.catalog_services_0_description:
+#    value: MySQL Open Service Broker
+#  .properties.catalog_services_0_bindable:
+#    value: true
+#  .properties.existing_endpoint_port:
+#    value: 3306
+#  .properties.catalog_services_0_plans_0_name:
+#    value: xs
+#  .properties.catalog_services_0_plans_0_description:
+#    value: A small instance for low requirement apps
+#  .properties.catalog_services_0_plans_0_free:
+#    value: true
+#  .properties.catalog_services_0_plans_0_metadata_connections:
+#    value: 5
+#  .properties.catalog_services_0_plans_1_name:
+#    value: s
+#  .properties.catalog_services_0_plans_1_description:
+#    value: The medium version for Mysql and distributed applications
+#  .properties.catalog_services_0_plans_1_free:
+#    value: false
+#  .properties.catalog_services_0_plans_1_metadata_connections:
+#    value: 1000
+#  .properties.catalog_services_0_plans_1_metadata_instancegroupconfig_0_nodes:
+#    value: 1
+##  .properties.catalog_services_0_plans_1_metadata_instancegroupconfig_0_vmtype:
+##    value: "nano"
+##  .properties.catalog_services_0_plans_1_metadata_instancegroupconfig_0_persistentdisktype:
+##    value: "5120"
+#  .properties.catalog_services_0_plans_1_metadata_instancegroupconfig_1_nodes:
+#   value: 0
+##  .properties.catalog_services_0_plans_1_metadata_instancegroupconfig_1_vmtype:
+##    value: 
+##      name: nano
+#  .properties.catalog_services_0_plans_2_name:
+#    value: m
+#  .properties.catalog_services_0_plans_2_description:
+#    value: A good toolbox providing availability and performance over five nodes
+#  .properties.catalog_services_0_plans_2_free:
+#    value: false
+#  .properties.catalog_services_0_plans_2_metadata_connections:
+#    value: 5000
+#  .properties.catalog_services_0_plans_2_metadata_instancegroupconfig_0_nodes:
+#    value: 1
+##  .properties.catalog_services_0_plans_2_metadata_instancegroupconfig_0_vmtype:
+##    value: 
+##      name: automatic
+##  .properties.catalog_services_0_plans_2_metadata_instancegroupconfig_0_persistentdisktype:
+##     value: 
+##       name: "20 GB"
+#  .properties.catalog_services_0_plans_2_metadata_instancegroupconfig_1_nodes:
+#    value: 0
+##  .properties.catalog_services_0_plans_2_metadata_instancegroupconfig_1_vmtype:
+##    value: 
+##      name: automatic
+#  .properties.catalog_services_0_plans_3_name:
+#    value: l
+#  .properties.catalog_services_0_plans_3_description:
+#    value: The big Bazooka to run heavy computation tasks in a redundant cluster. 7 nodes.
+#  .properties.catalog_services_0_plans_3_free:
+#    value: false
+#  .properties.catalog_services_0_plans_3_metadata_connections:
+#    value: 5000
+#  .properties.catalog_services_0_plans_3_metadata_instancegroupconfig_0_nodes:
+#    value: 3
+##  .properties.catalog_services_0_plans_3_metadata_instancegroupconfig_0_vmtype:
+##    value: 
+##      name: automatic
+##  .properties.catalog_services_0_plans_3_metadata_instancegroupconfig_0_persistentdisktype:
+##    value: 
+##      name: "50 GB"
+#  .properties.catalog_services_0_plans_3_metadata_instancegroupconfig_1_nodes:
+#    value: 1
+##  .properties.catalog_services_0_plans_3_metadata_instancegroupconfig_1_vmtype:
+##    value:
+##      name: automatic

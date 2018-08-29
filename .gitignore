@@ -28,3 +28,7 @@ ca.pem
 *.springWebflow
 osb-service/src/main/resources/static
 osb-service/src/main/resources/templates
+/tiles/*/**
+!/tiles/icon/*
+/tiles/om
+*_object.yml
