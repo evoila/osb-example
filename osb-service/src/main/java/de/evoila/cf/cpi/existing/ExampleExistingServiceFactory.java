@@ -7,8 +7,9 @@ import de.evoila.cf.broker.bean.ExistingEndpointBean;
 import de.evoila.cf.broker.model.Plan;
 import de.evoila.cf.broker.model.Platform;
 import de.evoila.cf.broker.model.ServiceInstance;
+import de.evoila.cf.broker.repository.PlatformRepository;
+import de.evoila.cf.broker.service.availability.ServicePortAvailabilityVerifier;
 import de.evoila.cf.broker.service.custom.ExampleBackendService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,17 @@ import java.util.Map;
 @EnableConfigurationProperties
 @ConditionalOnBean(ExistingEndpointBean.class)
 public class ExampleExistingServiceFactory extends ExistingServiceFactory {
-	
-	@Autowired
-	private ExampleBackendService exampleDbService;
 
-    @Autowired
+	private ExampleBackendService exampleBackendService;
+
     private ExistingEndpointBean existingEndpointBean;
+
+    public ExampleExistingServiceFactory(PlatformRepository platformRepository, ServicePortAvailabilityVerifier portAvailabilityVerifier,
+                                         ExistingEndpointBean existingEndpointBean, ExampleBackendService exampleBackendService) {
+        super(platformRepository, portAvailabilityVerifier, existingEndpointBean);
+        this.exampleBackendService = exampleBackendService;
+        this.existingEndpointBean = existingEndpointBean;
+    }
 
     @Override
     public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> customParameters) {

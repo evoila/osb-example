@@ -1,5 +1,6 @@
 	package de.evoila.cf.broker.haproxy;
 
+import de.evoila.cf.broker.bean.HAProxyConfiguration;
 import de.evoila.cf.broker.model.Mode;
 import de.evoila.cf.broker.model.ServerAddress;
 import de.evoila.cf.broker.service.HAProxyService;
@@ -13,6 +14,10 @@ import java.util.List;
  */
 @Service
 public class HAProxyServiceImpl extends HAProxyService {
+
+	public HAProxyServiceImpl(HAProxyConfiguration haProxyConfiguration) {
+		super(haProxyConfiguration);
+	}
 
 	@Override
 	public Mode getMode(ServerAddress serverAddress) {
