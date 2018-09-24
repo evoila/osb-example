@@ -1,6 +1,6 @@
 ---
 name: osb-example # By convention lowercase with dashes
-icon_file: icon/example.jpg
+icon_file: icon/example.png
 label: Example Open Service Broker
 description: Example Service Broker
 
