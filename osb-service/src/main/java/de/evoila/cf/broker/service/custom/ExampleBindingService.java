@@ -4,11 +4,14 @@
 package de.evoila.cf.broker.service.custom;
 
 import de.evoila.cf.broker.exception.ServiceBrokerException;
-import de.evoila.cf.broker.model.*;
-import de.evoila.cf.broker.repository.BindingRepository;
-import de.evoila.cf.broker.repository.RouteBindingRepository;
-import de.evoila.cf.broker.repository.ServiceDefinitionRepository;
-import de.evoila.cf.broker.repository.ServiceInstanceRepository;
+import de.evoila.cf.broker.model.RouteBinding;
+import de.evoila.cf.broker.model.ServiceInstance;
+import de.evoila.cf.broker.model.ServiceInstanceBinding;
+import de.evoila.cf.broker.model.ServiceInstanceBindingRequest;
+import de.evoila.cf.broker.model.catalog.ServerAddress;
+import de.evoila.cf.broker.model.catalog.plan.Plan;
+import de.evoila.cf.broker.repository.*;
+import de.evoila.cf.broker.service.AsyncBindingService;
 import de.evoila.cf.broker.service.HAProxyService;
 import de.evoila.cf.broker.service.impl.BindingServiceImpl;
 import de.evoila.cf.broker.util.RandomString;
@@ -32,8 +35,11 @@ public class ExampleBindingService extends BindingServiceImpl {
     RandomString randomString = new RandomString(10);
 
 	public ExampleBindingService(BindingRepository bindingRepository, ServiceDefinitionRepository serviceDefinitionRepository,
-								 ServiceInstanceRepository serviceInstanceRepository, RouteBindingRepository routeBindingRepository, HAProxyService haProxyService) {
-		super(bindingRepository, serviceDefinitionRepository, serviceInstanceRepository, routeBindingRepository, haProxyService);
+                                 ServiceInstanceRepository serviceInstanceRepository,
+                                 RouteBindingRepository routeBindingRepository, HAProxyService haProxyService, JobRepository jobRepository,
+                                 AsyncBindingService asyncBindingService, PlatformRepository platformRepository) {
+        super(bindingRepository, serviceDefinitionRepository, serviceInstanceRepository, routeBindingRepository,
+                haProxyService, jobRepository, asyncBindingService, platformRepository);
 	}
 
 	@Override
@@ -52,11 +58,6 @@ public class ExampleBindingService extends BindingServiceImpl {
 		credentials.put("uri", dbURL);
 		
 		return credentials;
-	}
-
-	@Override
-	public ServiceInstanceBinding getServiceInstanceBinding(String id) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
