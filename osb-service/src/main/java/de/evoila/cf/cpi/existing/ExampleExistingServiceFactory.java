@@ -37,6 +37,11 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
     }
 
     @Override
+    public ServiceInstance getInstance(ServiceInstance serviceInstance, Plan plan) {
+        return serviceInstance;
+    }
+
+    @Override
     public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> customParameters) {
         createDatabase(serviceInstance, plan);
 
