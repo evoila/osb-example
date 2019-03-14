@@ -10,6 +10,7 @@ import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.repository.PlatformRepository;
 import de.evoila.cf.broker.service.availability.ServicePortAvailabilityVerifier;
 import de.evoila.cf.broker.service.custom.ExampleBackendService;
+import de.evoila.cf.security.credentials.CredentialStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * @author Johannes Hiemer
- *
+ * @author Johannes Hiemer.
  */
 @Service
 @EnableConfigurationProperties
@@ -29,11 +29,17 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
 
     private ExistingEndpointBean existingEndpointBean;
 
+    private CredentialStore credentialStore;
+
+    private static String ROOT_USER = "root_user";
+
     public ExampleExistingServiceFactory(PlatformRepository platformRepository, ServicePortAvailabilityVerifier portAvailabilityVerifier,
-                                         ExistingEndpointBean existingEndpointBean, ExampleBackendService exampleBackendService) {
+                                         ExistingEndpointBean existingEndpointBean, ExampleBackendService exampleBackendService,
+                                         CredentialStore credentialStore) {
         super(platformRepository, portAvailabilityVerifier, existingEndpointBean);
         this.exampleBackendService = exampleBackendService;
         this.existingEndpointBean = existingEndpointBean;
+        this.credentialStore = credentialStore;
     }
 
     @Override
@@ -43,6 +49,8 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
 
     @Override
     public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> customParameters) {
+        credentialStore.createUser(serviceInstance, ROOT_USER);
+
         createDatabase(serviceInstance, plan);
 
         return serviceInstance;
@@ -50,6 +58,7 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
 
     @Override
     public void deleteInstance(ServiceInstance serviceInstance, Plan plan) {
+        credentialStore.deleteCredentials(serviceInstance, ROOT_USER);
         deleteDatabase(serviceInstance, plan);
     }
 

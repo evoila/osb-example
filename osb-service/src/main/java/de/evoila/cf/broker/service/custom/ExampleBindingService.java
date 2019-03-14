@@ -74,6 +74,7 @@ public class ExampleBindingService extends BindingServiceImpl {
 
 	@Override
 	protected void unbindService(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) {
+	    credentialStore.deleteCredentials(serviceInstance, binding.getId());
 		log.info("Unbinding the Example Service...");
 	}
 }
