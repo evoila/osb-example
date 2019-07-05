@@ -101,7 +101,7 @@ Concrete Service logic and binding logic has to be added.
 To implement custom service creation behaviour implement a Service that inherits from `ExistingServiceFactory` or `OpenstackPlatformService` or 
 start from scratch with a new CPI by Implementing the `PlatformService`.   
 To manipulate the service binding behaviour you can inherit from `BindingService` or `BindingServiceImpl`.
-For the full framework implementation see the documentation in [evoila/osb-service-broker](https://github.com/evoila/osb-service-broker)
+For the full framework implementation see the documentation in [evoila/osb-docs](https://github.com/evoila/osb-docs)
 
 
   
