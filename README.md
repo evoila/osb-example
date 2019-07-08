@@ -1,12 +1,11 @@
-# osb-service-broker-example
+# osb-example
 ## Description
 
-An empty Cloud Foundry Service Broker missing concrete implementation of a distinct service.   
-Supports deployment to OpenStack.  
-Uses MongoDB Database for management.   
+An empty Open Service Broker missing concrete implementation of a distinct service.    
+Uses MongoDB Database for management. 
+Uses MongoDB Database or CredHub for storing credentials.  
 Configuration files and deployment scripts must be added.  
-Concrete Service logic and binding logic has to be added.  
-
+Concrete Service logic and binding logic has to be added. In this state, the broker simulates business logic
 
 ## Start with this example
 1. Clone it.
@@ -14,7 +13,7 @@ Concrete Service logic and binding logic has to be added.
 3. Provide a valid configuration. 
 4. Run it or push it to Cloud Foundry.
 
-##### Example Configuratuion
+##### Example Configuration
 
 
     spring:
@@ -32,7 +31,7 @@ Concrete Service logic and binding logic has to be added.
           password: $password
     
     ### Deployment ###
-    #### Existing MongoDB Server/Cluster ####
+    #### Existing Service Server/Cluster ####
     existing:
       endpoint:
         hosts: 
@@ -54,23 +53,6 @@ Concrete Service logic and binding logic has to be added.
       username: $authUser
       password: $authPassword
       role: USER
-    
-    ## OpenStack Settings ## (OPTIONAL)
-    #openstack:
-    #  endpoint: 
-    #  user:
-    #    username: 
-    #    password: 
-    #    domainName: 
-    #  project:
-    #    domainName: 
-    #    projectName: 
-    #  networkId:
-    #  subnetId: 
-    #  imageId: 
-    #  keypair: 
-    #  cinder:
-    #    az: zone00
     
     catalog:
       services:
@@ -98,10 +80,10 @@ Concrete Service logic and binding logic has to be added.
 
 
 ## Start Custom Implementation
-To implement custom service creation behaviour implement a Service that inherits from `ExistingServiceFactory` or `OpenstackPlatformService` or 
+To implement custom service creation behaviour implement a Service that inherits from `ExistingServiceFactory` or any already supported CPI PlatformService or 
 start from scratch with a new CPI by Implementing the `PlatformService`.   
 To manipulate the service binding behaviour you can inherit from `BindingService` or `BindingServiceImpl`.
-For the full framework implementation see the documentaion in [evoila/osb-service-broker](https://github.com/evoila/osb-service-broker)
+For the full framework implementation see the documentation in [evoila/osb-docs](https://github.com/evoila/osb-docs)
 
 
   
