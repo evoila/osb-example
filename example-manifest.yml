@@ -8,7 +8,7 @@ applications:
       - route: osb-example.your.cf.host
     buildpacks:
       - https://github.com/cloudfoundry/java-buildpack.git#v4.19.1
-      # -> version suffix necessary, if the buildpack of the CF instance is not supporting Java 12
+      # -> version suffix necessary, if the buildpack of the CF instance is not supporting the wanted Java version
     path: osb-service/target/osb-example-1.2.0.jar
     env:
       JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 12.+ } }' 
