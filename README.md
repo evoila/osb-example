@@ -5,7 +5,7 @@ An empty Open Service Broker missing concrete implementation of a distinct servi
 Uses MongoDB Database for management. 
 Uses MongoDB Database or CredHub for storing credentials.  
 Configuration files and deployment scripts must be added.  
-Concrete Service logic and binding logic has to be added. In this state, the broker simulates business logic
+Concrete Service logic and binding logic has to be added. In this state, the broker simulates business logic to act as an osb-spec valid broker. .
 
 ## Start with this example
 1. Clone it.
