@@ -3,10 +3,7 @@
  */
 package de.evoila.cf.broker.service.custom;
 
-import de.evoila.cf.broker.model.RouteBinding;
-import de.evoila.cf.broker.model.ServiceInstance;
-import de.evoila.cf.broker.model.ServiceInstanceBinding;
-import de.evoila.cf.broker.model.ServiceInstanceBindingRequest;
+import de.evoila.cf.broker.model.*;
 import de.evoila.cf.broker.model.catalog.ServerAddress;
 import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.model.credential.UsernamePasswordCredential;
@@ -15,6 +12,7 @@ import de.evoila.cf.broker.service.AsyncBindingService;
 import de.evoila.cf.broker.service.HAProxyService;
 import de.evoila.cf.broker.service.impl.BindingServiceImpl;
 import de.evoila.cf.broker.util.ServiceInstanceUtils;
+import de.evoila.cf.cpi.existing.ExampleExistingServiceFactory;
 import de.evoila.cf.security.credentials.CredentialStore;
 import de.evoila.cf.security.utils.RandomString;
 import org.slf4j.Logger;
@@ -34,16 +32,19 @@ public class ExampleBindingService extends BindingServiceImpl {
 
 	private CredentialStore credentialStore;
 
+	private ExampleExistingServiceFactory exampleExistingServiceFactory;
+
 	public ExampleBindingService(BindingRepository bindingRepository, ServiceDefinitionRepository serviceDefinitionRepository,
                                  ServiceInstanceRepository serviceInstanceRepository, RouteBindingRepository routeBindingRepository,
                                  HAProxyService haProxyService, JobRepository jobRepository,
                                  AsyncBindingService asyncBindingService, PlatformRepository platformRepository,
-                                 CredentialStore credentialStore) {
+                                 CredentialStore credentialStore, ExampleExistingServiceFactory exampleExistingServiceFactory) {
         super(bindingRepository, serviceDefinitionRepository,
                 serviceInstanceRepository, routeBindingRepository,
                 haProxyService, jobRepository,
                 asyncBindingService, platformRepository);
         this.credentialStore = credentialStore;
+        this.exampleExistingServiceFactory = exampleExistingServiceFactory;
 	}
 
 	@Override
@@ -56,14 +57,22 @@ public class ExampleBindingService extends BindingServiceImpl {
 
         credentialStore.createUser(serviceInstance, bindingId);
         UsernamePasswordCredential usernamePasswordCredential = credentialStore.getUser(serviceInstance, bindingId);
+		String databaseName = serviceInstance.getId();
 
 		String dbURL = String.format("example://%s:%s@%s/%s", usernamePasswordCredential.getUsername(),
                 usernamePasswordCredential.getPassword(), endpoint,
-                new RandomString(10).nextString());
+                databaseName);
 
 		Map<String, Object> credentials = new HashMap<>();
 		credentials.put("uri", dbURL);
-		
+
+		if (plan.getPlatform() == Platform.EXISTING_SERVICE) {
+			ExampleBackendRawService backendRawService = exampleExistingServiceFactory.getConnection(plan);
+			if (backendRawService != null) {
+				backendRawService.bind(databaseName, usernamePasswordCredential.getUsername());
+			}
+		}
+
 		return credentials;
 	}
 
@@ -74,7 +83,16 @@ public class ExampleBindingService extends BindingServiceImpl {
 
 	@Override
 	protected void unbindService(ServiceInstanceBinding binding, ServiceInstance serviceInstance, Plan plan) {
-	    credentialStore.deleteCredentials(serviceInstance, binding.getId());
 		log.info("Unbinding the Example Service...");
+
+		UsernamePasswordCredential bindingCredential = credentialStore.getUser(serviceInstance, binding.getId());
+		if (plan.getPlatform() == Platform.EXISTING_SERVICE) {
+			ExampleBackendRawService backendRawService = exampleExistingServiceFactory.getConnection(plan);
+			if (backendRawService != null) {
+				backendRawService.unbind(serviceInstance.getId(), bindingCredential.getUsername());
+			}
+		}
+
+		credentialStore.deleteCredentials(serviceInstance, binding.getId());
 	}
 }
