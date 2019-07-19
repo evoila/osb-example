@@ -3,6 +3,9 @@
  */
 package de.evoila.cf.broker.service.custom;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Johannes Hiemer
  * This class contains a specific implementation for the access to the 
@@ -14,7 +17,9 @@ package de.evoila.cf.broker.service.custom;
  * API.
  */
 public class ExampleBackendRawService {
-	
+
+	protected Logger log = LoggerFactory.getLogger(getClass());
+
 	private boolean initialized;
 	
 	public void createConnection() {
@@ -25,8 +30,20 @@ public class ExampleBackendRawService {
 		return this.initialized;
 	}
 
-	public void bind() {
-		// We bind 
+	public void createDatabase(String databaseName) {
+		log.info("Created an example service \""+databaseName+"\".");
+	}
+
+	public void deleteDatabase(String databaseName) {
+		log.info("Deleted an example service \""+databaseName+"\".");
+	}
+
+	public void bind(String databaseName, String username) {
+		log.info("Bound \""+username+"\" to example service \""+databaseName+"\".");
+	}
+
+	public void unbind(String databaseName, String username) {
+		log.info("Unbound \""+username+"\" from example service \""+databaseName+"\".");
 	}
 
 }
