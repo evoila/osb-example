@@ -9,12 +9,10 @@ import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.model.credential.UsernamePasswordCredential;
 import de.evoila.cf.broker.repository.*;
 import de.evoila.cf.broker.service.AsyncBindingService;
-import de.evoila.cf.broker.service.HAProxyService;
 import de.evoila.cf.broker.service.impl.BindingServiceImpl;
 import de.evoila.cf.broker.util.ServiceInstanceUtils;
 import de.evoila.cf.cpi.existing.ExampleExistingServiceFactory;
 import de.evoila.cf.security.credentials.CredentialStore;
-import de.evoila.cf.security.utils.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,13 +34,11 @@ public class ExampleBindingService extends BindingServiceImpl {
 
 	public ExampleBindingService(BindingRepository bindingRepository, ServiceDefinitionRepository serviceDefinitionRepository,
                                  ServiceInstanceRepository serviceInstanceRepository, RouteBindingRepository routeBindingRepository,
-                                 HAProxyService haProxyService, JobRepository jobRepository,
-                                 AsyncBindingService asyncBindingService, PlatformRepository platformRepository,
+                                 JobRepository jobRepository, AsyncBindingService asyncBindingService, PlatformRepository platformRepository,
                                  CredentialStore credentialStore, ExampleExistingServiceFactory exampleExistingServiceFactory) {
         super(bindingRepository, serviceDefinitionRepository,
                 serviceInstanceRepository, routeBindingRepository,
-                haProxyService, jobRepository,
-                asyncBindingService, platformRepository);
+                jobRepository, asyncBindingService, platformRepository);
         this.credentialStore = credentialStore;
         this.exampleExistingServiceFactory = exampleExistingServiceFactory;
 	}
