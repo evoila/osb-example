@@ -17,7 +17,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -54,6 +53,18 @@ public class ExampleExistingServiceFactory extends ExistingServiceFactory {
     public ServiceInstance createInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> customParameters) {
         UsernamePasswordCredential credentials = credentialStore.createUser(serviceInstance, ROOT_USER);
         createDatabase(serviceInstance, plan);
+
+        return serviceInstance;
+    }
+
+    @Override
+    public ServiceInstance updateInstance(ServiceInstance serviceInstance, Plan plan, Map<String, Object> customParameters) {
+        if (serviceInstance.getPlanId().equals(plan.getId())) {
+            serviceInstance.setParameters(customParameters);
+        } else {
+            serviceInstance.setPlanId(plan.getId());
+        }
+
         return serviceInstance;
     }
 
