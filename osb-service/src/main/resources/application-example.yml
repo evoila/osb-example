@@ -163,7 +163,7 @@ spring:
       password: password
       port: 27017
       username: username
-  profiles: example
+  config.activate.on-profile: example
   rabbitmq:
     host: 127.0.0.1
     password: password

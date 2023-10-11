@@ -55,7 +55,7 @@ public class ExampleBindingService extends BindingServiceImpl {
         UsernamePasswordCredential usernamePasswordCredential = credentialStore.getUser(serviceInstance, bindingId);
 		String databaseName = serviceInstance.getId();
 
-		String dbURL = String.format("example://%s:%s@%s/%s", usernamePasswordCredential.getUsername(),
+		String dbURL = "example://%s:%s@%s/%s".formatted(usernamePasswordCredential.getUsername(),
                 usernamePasswordCredential.getPassword(), endpoint,
                 databaseName);
 
